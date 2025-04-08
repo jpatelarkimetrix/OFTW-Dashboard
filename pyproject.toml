@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "oftw"
+version = "0.1.0"
+description = "Plotly OFTW App Challenge"
+authors = ["justin <jpatel@arkimetrix.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+dash = "^3.0.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
