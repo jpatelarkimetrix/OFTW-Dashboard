@@ -1,9 +1,9 @@
 # How to Run This Awesome Project
 
-if ! command -v poetry &> /dev/null; then\n   # Check if Poetry available, if not install it
-    curl -sSL https://install.python-poetry.org | python3 -\n
-    export PATH=\"\$HOME/.local/bin:\$PATH\"\n
-fi\n
+- if ! command -v poetry &> /dev/null; then\n   # Check if Poetry available, if not install it
+    - curl -sSL https://install.python-poetry.org | python3 -\n
+    - export PATH=\"\$HOME/.local/bin:\$PATH\"\n
+- fi\n
 
 
 1. **Step into the Matrix**: Navigate to the project folder like a boss and activate the poetry virtual environment with:
