@@ -8,6 +8,10 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 dash = "^3.0.2"
+polars = "^1.27.0"
+numpy = "^2.2.4"
+dash-ag-grid = "^31.3.1"
+dash-bootstrap-components = "^2.0.0"
 
 
 [build-system]

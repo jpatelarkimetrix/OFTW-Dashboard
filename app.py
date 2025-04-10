@@ -1,7 +1,7 @@
 import dash
 from dash import html, Dash, dcc
 
-app = Dash(__name__, use_pages = True)
+app = Dash(__name__, use_pages = True, suppress_callback_exceptions = True)
 
 app.layout = html.Div([
     html.H1('Dashboard'),
