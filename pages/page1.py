@@ -78,7 +78,7 @@ def update_kpis(selected_fy ):
         .collect()
     )
 
-    print(money_moved_ytd_df)
+    # print(money_moved_ytd_df)
  
     mm_monthly_fig = figure_instance.create_monthly_mm_graph(money_moved_ytd_df, "money_moved_cumulative", fund_raise_target)
 
