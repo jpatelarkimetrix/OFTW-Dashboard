@@ -30,6 +30,25 @@ colors = {
 def layout(**kwargs):
     return moneymoved_layout()
 
+
+@callback(
+    Output("ai-modal", "is_open"),
+    Input({"type": "ai-icon", "chart": ALL}, "n_clicks"),
+    [
+        State("ai-modal", "is_open"),
+    ],
+)
+def toggle_ai_modal(ai_icon_click_list, is_ai_modal_open):
+    triggered_id = ctx.triggered_id
+
+    # Check if the triggered_id is a dictionary and has a "type" key
+    # This is to check if the triggered_id is from the ai-icon
+    if triggered_id and isinstance(triggered_id, dict) and "type" in triggered_id:
+        is_ai_modal_open = not is_ai_modal_open
+
+    return is_ai_modal_open
+
+
 @callback(
     Output("money-moved-card", "children"),
     Output("cf-money-moved-card", "children"),
@@ -42,7 +61,9 @@ def layout(**kwargs):
     Input("payment-platform-filter", "value"),
     Input("chapter-type-filter", "value"),
     Input({"type": "ai-icon", "chart": ALL}, "n_clicks"),
-    State("ai-message-store", "data"),
+    [
+        State("ai-message-store", "data"),
+    ],
     prevent_initial_call = "initial_duplicate"
 )
 def update_kpis_graphs(selected_fy, selected_payment_platform, selected_chapter_type, ai_icon_clicks_list, existing_ai_messages):

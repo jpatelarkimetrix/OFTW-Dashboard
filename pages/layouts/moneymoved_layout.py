@@ -37,6 +37,10 @@ def chart_header_title_with_ai(chart_id, title):
     component = html.Div(
         className="d-flex justify-content-between align-items-center w-100",
         children=[
+            dcc.Store(
+                id="ai-message-store",
+                data=[],
+            ),
             dbc.Row(
                 class_name="d-flex justify-content-between align-items-center w-100",
                 children=[
@@ -818,98 +822,105 @@ def moneymoved_layout():
                                                                 ],
                                                             ),
                                                             # Floating Draggable AI Panel
-                                                            html.Div(
-                                                                [
-                                                                    dash_draggable.GridLayout(
-                                                                        id="ai-draggable",
-                                                                        children=[
-                                                                            html.Div(
-                                                                                [
-                                                                                    html.Div(
-                                                                                        "🧠 AI Insights",
-                                                                                        style={
-                                                                                            "fontWeight": "bold"
-                                                                                        },
-                                                                                    ),
-                                                                                    html.Hr(),
-                                                                                    html.Div(
-                                                                                        id="ai-output",
-                                                                                        style={
-                                                                                            "overflowY": "auto",
-                                                                                        },
-                                                                                    ),
-                                                                                    dcc.Loading(
-                                                                                        id="ai-loading",
-                                                                                        type="default",  # or "dot", "circle"
-                                                                                        children=html.Div(
-                                                                                            id="ai-output"
-                                                                                        ),
-                                                                                    ),
-                                                                                ],
-                                                                                style={
-                                                                                    "backgroundColor": "white",
-                                                                                    "padding": "15px",
-                                                                                    "border": "1px solid #ccc",
-                                                                                    "borderRadius": "8px",
-                                                                                    "boxShadow": "2px 2px 10px rgba(0,0,0,0.1)",
-                                                                                    "height": "100%",
-                                                                                    "width": "100%",
-                                                                                    "display": "flex",
-                                                                                    "flexDirection": "column",
-                                                                                    "flexGrow": "0",
-                                                                                },
-                                                                            )
-                                                                        ],
-                                                                        layout=[
-                                                                            {
-                                                                                "i": "0",
-                                                                                "x": 0,
-                                                                                "y": 0,
-                                                                                "w": 100,
-                                                                                "h": 10,
-                                                                                "static": False,
-                                                                            }
-                                                                        ],
-                                                                        # cols=12,
-                                                                        # rowHeight=30,
-                                                                        # width=100%,
-                                                                        isDraggable=True,
-                                                                        isResizable=True,
-                                                                    )
-                                                                ],
-                                                            ),
-                                                            dcc.Store(
-                                                                id="ai-message-store",
-                                                                data=[],
-                                                            ),
-                                                        ],
-                                                    ),
-                                                
-                                                    html.Div(
-                                                [
-                                                    html.Footer(
-                                                        className="content-footer footer bg-footer-theme",
-                                                        children=[
-                                                            html.Div(
-                                                                className="container-fluid",
+                                                            dbc.Modal(
+                                                                id="ai-modal",
+                                                                is_open=False,
+                                                                size="xl",
+                                                                centered=True,
+                                                                backdrop=True,
                                                                 children=[
-                                                                    html.Div(
-                                                                        className="footer-container d-flex align-items-center justify-content-center py-4 flex-md-row flex-column",
-                                                                        children=[
-                                                                            html.Div(
-                                                                                className="text-body txt-white",
-                                                                                children=[
-                                                                                    "© 2025. All rights reserved.",
-                                                                                ],
-                                                                            ),
-                                                                        ],
-                                                                    )
+                                                                    html.Div([
+                                                                        dash_draggable.GridLayout(
+                                                                            # id="ai-draggable",
+                                                                            children=[
+                                                                                html.Div(
+                                                                                    [
+                                                                                        html.Div(
+                                                                                            "🧠 AI Insights",
+                                                                                            style={
+                                                                                                "fontWeight": "bold"
+                                                                                            },
+                                                                                        ),
+                                                                                        html.Hr(),
+                                                                                        dcc.Loading(
+                                                                                            id="ai-loading",
+                                                                                            type="default",  # or "dot", "circle"
+                                                                                            fullscreen=False,
+                                                                                            children=html.Div(
+                                                                                                id="ai-output",
+                                                                                                style={
+                                                                                                    "overflowY": "auto",
+                                                                                                },
+                                                                                            ),
+                                                                                        ),
+                                                                                    ],
+                                                                                    style={
+                                                                                        "backgroundColor": "white",
+                                                                                        "padding": "15px",
+                                                                                        "border": "1px solid #ccc",
+                                                                                        "borderRadius": "8px",
+                                                                                        "boxShadow": "2px 2px 10px rgba(0,0,0,0.1)",
+                                                                                        "height": "100%",
+                                                                                        "width": "100%",
+                                                                                        "display": "flex",
+                                                                                        "flexDirection": "column",
+                                                                                        "flexGrow": "0",
+                                                                                    },
+                                                                                )
+                                                                            ],
+                                                                            # layout=[
+                                                                            #     {
+                                                                            #         "i": "0",
+                                                                            #         "x": 0,
+                                                                            #         "y": 0,
+                                                                            #         "w": 90,
+                                                                            #         "h": 10,
+                                                                            #         "static": False,
+                                                                            #     }
+                                                                            # ],
+                                                                            # cols=12,
+                                                                            # rowHeight=30,
+                                                                            # width=100%,
+                                                                            # isDraggable=True,
+                                                                            isResizable=True,
+                                                                        )
+                                                                    ],
+                                                                    # style = {
+                                                                    #     "position": "fixed",
+                                                                    #     "bottom": "20px",
+                                                                    #     "right": "20px",
+                                                                    #     "width": "300px",
+                                                                    #     "zIndex": 9999,
+                                                                    # },
+                                                                ),
                                                                 ],
-                                                            )
+                                                            ),
                                                         ],
                                                     ),
-                                                ],
-                                            ),
+                                                    html.Div([
+                                                        html.Footer(
+                                                            className="content-footer footer bg-footer-theme",
+                                                            children=[
+                                                                html.Div(
+                                                                    className="container-fluid",
+                                                                    children=[
+                                                                        html.Div(
+                                                                            className="footer-container d-flex align-items-center justify-content-center py-4 flex-md-row flex-column",
+                                                                            children=[
+                                                                                html.Div(
+                                                                                    className="text-body txt-white",
+                                                                                    children=[
+                                                                                        "© 2025. All rights reserved.",
+                                                                                    ],
+                                                                                ),
+                                                                            ],
+                                                                        )
+                                                                    ],
+                                                                )
+                                                            ],
+                                                        ),
+                                                    ],
+                                                ),
                                                 ],
                                             ),
                                         ],

@@ -3,6 +3,19 @@
 * File include item demo only specific css only
 ******************************************************************************/
 
+.dash-loading, .dash-spinner {
+  z-index: 9999 !important;
+}
+
+.dash-spinner::after {
+  content: "🧠 Generating Insights...";
+  display: block;
+  margin-top: 10px;
+  font-size: 1rem;
+  color: #065A60;
+  text-align: center;
+}
+
 .menu .app-brand.demo {
   height: 64px;
   margin-top: 12px;
