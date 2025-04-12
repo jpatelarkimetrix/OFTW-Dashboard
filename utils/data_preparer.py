@@ -1,6 +1,12 @@
 import polars as pl
 
+import openai
+import os
+
 from utils.data_loader import data_loader
+
+# Set up OpenAI API (ensure this is your valid API key)
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 class DataPreparer:
     def __init__(self):
@@ -18,7 +24,33 @@ class DataPreparer:
         Retrieves the count of unique values in the column.
         """
         lf = data_loader.get_data(dataset_name)
-        return lf.select(pl.col(col_name).n_unique()).collect().item()
+        return lf.filter(pl.col(col_name).is_not_null()).select(pl.col(col_name).n_unique()).collect().item()
+    
+    def get_col_unique_values_lf(self, lf, column_name):
+        """
+        Returns the unique values of a given column in a DataFrame.
+
+        Parameters:
+        lf (DataFrame): The DataFrame containing the column.
+        column_name (str): The name of the column to get unique values from.
+
+        Returns:
+        list: A list of unique values in the specified column.
+        """
+        return lf.filter(pl.col(column_name).is_not_null()).select(column_name).unique().sort(by = column_name).collect().to_series().to_list()
+    
+    def get_unique_col_count_lf(self, lf, column_name):
+        """
+        Returns the count of unique values of a given column in a DataFrame.
+
+        Parameters:
+        lf (DataFrame): The DataFrame containing the column.
+        column_name (str): The name of the column to get unique values count from.
+
+        Returns:
+        list: A total count of unique values in the specified column.
+        """
+        return lf.filter(pl.col(column_name).is_not_null()).select(pl.col(column_name).n_unique()).collect().item()
     
     def filter_data(self, dataset_name, filters = None, columns = None, logic = "AND"):
         """
@@ -77,3 +109,41 @@ class DataPreparer:
             raise ValueError(f"Unsupported operator: {operator}")
 
         return ops[operator]
+    
+    def get_llm_insight(self, plotly_fig_data):
+        """
+        Placeholder for LLM insight retrieval.
+        """
+
+        prompt = """
+            You are an AI assistant for the OFTW (One for the World is a movement aimed at revolutionizing charitable giving to 
+            eradicate extreme poverty by educating and motivating people to donate effectively.) dashboard.
+            Based on the plotly figure data below, provide:  
+            1. A short (1 line) summary of what the graph shows. 
+            2. 2 key insights from the data. 
+            3. 2 actionable suggestions for organization.  
+            Plotly Figure Data: {}
+            Please provide the insights in a structured format, such as:
+            1. Summary: [Your summary here]
+            2. Key Insights: [Your insights here]
+            3. Action Suggestions: [Your suggestions here]
+            Use plain language and keep it concise. 
+        """.format(plotly_fig_data)
+
+        try:
+            response = openai.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=400,
+                n=1,
+                stop=None,
+                temperature=0.7,
+            )
+            return response.choices[0].message.content
+        except Exception as e:
+            print(f"Error in LLM insight retrieval: {e}")
+            # Handle error (e.g., log it, raise it, etc.)
+            # For now, return a placeholder
+            return "LLM could not generate insight."
