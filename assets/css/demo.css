@@ -220,7 +220,7 @@ header.sticky .logo {
 .txt-white{
   color: white  !important;
 }
-
+/* FOrs cad orange kpi colors*/
 .back-color{
   background-color: #fb6a37!important;
   background: linear-gradient(90deg, #e73e02 0%, #ffe8e0 50%, #7c2101 100%);
@@ -232,7 +232,7 @@ header.sticky .logo {
 .txt-orange {
   color: #fc6c41 !important;
 }
-
+/* FOrs cad yellow kpi colors*/
 .back-color-yellow{
   background-color: #c6e539 !important;
   background: linear-gradient(90deg, #94b112 0%, #f6ff9f 50%, #CDDC39 100%);
@@ -260,7 +260,7 @@ text-align: center;
     line-height: 20px;
     font-weight: 500;
   }
-
+/* FOrs cad blue kpi colors*/
   .back-color-blue{
     background-color: #2e76f3 !important;
     background: linear-gradient(90deg, #105ee5 0%, #b8d2ff 50%, #03A9F4 100%);
