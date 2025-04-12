@@ -111,165 +111,25 @@ def moneymoved_layout():
                                                                     className="scaleX-n1-rtl logotext",
                                                                     alt="View Badge User",
                                                                 ),
-                                                                className="logo",
+                                                                className="logo oftw",
                                                             ),
-                                                            html.Div(
-                                                                html.Img(
-                                                                    src="../../assets/img/illustrations/one_of_the_world_logo.png",
-                                                                    height="55",
-                                                                    className="scaleX-n1-rtl logotext",
-                                                                    alt="View Badge User",
-                                                                ),
-                                                                className="logo",
-                                                            ),
+                                                            # html.Div(
+                                                            #     html.Img(
+                                                            #         src="../../assets/img/illustrations/93064_Arkimetrix-Analytics-Ltd-1.png",
+                                                            #         height="55",
+                                                            #         # className="scaleX-n1-rtl logotext",
+                                                            #         alt="View Badge User",
+                                                            #     ),
+                                                            #     className="logo arkimetrix",
+                                                            # ),
                                                         ],
                                                     ),
                                                     html.Div(
                                                         className="container-fluid flex-grow-1 container-p-y p-top-custom",
                                                         children=[
-                                                              html.Div(
-                                                                className="row gy-4 mt-1 mb-4",
-                                                                children=[
-                                                                    html.Div(
-                                                                        className="col-lg-4 col-md-4  align-self-end order-4",
-                                                                        children=[
-                                                                            html.Div(
-                                                                                className="card back-color",
-                                                                                children=[
-                                                                                    html.Div(
-                                                                                        className="d-flex row",
-                                                                                        children=[
-                                                                                            html.Div(
-                                                                                                className="col-sm-3 col-md-3 text-center text-sm-left d-flex align-items-center",
-                                                                                                children=[
-                                                                                                    html.Div(
-                                                                                                        className="card-body pb-0 text-sm-start text-center",
-                                                                                                        children=[
-                                                                                                            html.Img(
-                                                                                                                src="../../assets/img/illustrations/OFTW-Logomark-Logo.png",
-                                                                                                                height="120",
-                                                                                                                alt="Target User",
-                                                                                                            )
-                                                                                                        ],
-                                                                                                    )
-                                                                                                ],
-                                                                                            ),
-                                                                                            html.Div(
-                                                                                                className="col-sm-9 col-md-9 pl-0",
-                                                                                                children=[
-                                                                                                    html.Div(
-                                                                                                        className="card-body right-bg h-100",
-                                                                                                        id="money-moved-card",
-                                                                                                        children=[
-                                                                                                            html.H5(
-                                                                                                                "Welcome!",
-                                                                                                                className="card-title txt-primary mb-2",
-                                                                                                            ),
-                                                                                                            html.H4(
-                                                                                                                "One for the World",
-                                                                                                                className="mb-6 txt-orange",
-                                                                                                            ),
-                                                                                                            # html.Span(
-                                                                                                            #     "78% of TARGET",
-                                                                                                            #     className="badge bg-label-primary",
-                                                                                                            # ),
-                                                                                                        ],
-                                                                                                    )
-                                                                                                ],
-                                                                                            ),
-                                                                                        ],
-                                                                                    )
-                                                                                ],
-                                                                            )
-                                                                        ],
-                                                                    ),
-                                                                    html.Div(
-                                                                        className="col-lg-4 col-md-4  align-self-end order-4",
-                                                                        children=[
-                                                                            html.Div(
-                                                                                className="card back-color-yellow",
-                                                                                children=[
-                                                                                    html.Div(
-                                                                                        className="d-flex row",
-                                                                                        children=[
-                                                                                            html.Div(
-                                                                                                className="col-sm-3 col-md-3 text-center text-sm-left",
-                                                                                                children=[
-                                                                                                    html.Div(
-                                                                                                        className="card-body pb-0  d-flex align-items-center text-sm-start text-center",
-                                                                                                        children=[
-                                                                                                            html.Img(
-                                                                                                                src="../../assets/img/illustrations/OFTW-Logomark-Logo.png",
-                                                                                                                height="120",
-                                                                                                                alt="Target User",
-                                                                                                            )
-                                                                                                        ],
-                                                                                                    )
-                                                                                                ],
-                                                                                            ),
-                                                                                            html.Div(
-                                                                                                className="col-sm-9 col-md-9",
-                                                                                                children=[
-                                                                                                    html.Div(
-                                                                                                        className="card-body right-bg-yellow h-100",
-                                                                                                        id="cf-money-moved-card",
-                                                                                                        children=[
-                                                                                                        ],
-                                                                                                    )
-                                                                                                ],
-                                                                                            ),
-                                                                                        ],
-                                                                                    )
-                                                                                ],
-                                                                            )
-                                                                        ],
-                                                                    ),
-                                                                    html.Div(
-                                                                        className="col-lg-4 col-md-4 align-self-end order-4",
-                                                                        children=[
-                                                                            html.Div(
-                                                                                className="card back-color-blue",
-                                                                                children=[
-                                                                                    html.Div(
-                                                                                        className="d-flex row",
-                                                                                        children=[
-                                                                                            html.Div(
-                                                                                                className="col-sm-3 col-md-3 text-center text-sm-left",
-                                                                                                children=[
-                                                                                                    html.Div(
-                                                                                                        className="card-body pb-0 d-flex align-items-center text-sm-start text-center",
-                                                                                                        children=[
-                                                                                                            html.Img(
-                                                                                                                src="../../assets/img/illustrations/OFTW-Logomark-Logo.png",
-                                                                                                                height="120",
-                                                                                                                alt="Target User",
-                                                                                                            )
-                                                                                                        ],
-                                                                                                    )
-                                                                                                ],
-                                                                                            ),
-                                                                                            html.Div(
-                                                                                                className="col-sm-9 col-md-9",
-                                                                                                children=[
-                                                                                                    html.Div(
-                                                                                                        className="card-body right-bg-blue h-100",
-                                                                                                        id="money-moved-card",
-                                                                                                        children=[
-                                                                                                            
-                                                                                                        ],
-                                                                                                    )
-                                                                                                ],
-                                                                                            ),
-                                                                                        ],
-                                                                                    )
-                                                                                ],
-                                                                            )
-                                                                        ],
-                                                                    ),
-                                                                ],
-                                                            ),
+                                                            # -- Filters --
                                                             html.Div(
-                                                                className="col-xxl-12 col-lg-12 col-md-12 order-1 mt-1 mb-6",
+                                                                className="col-xxl-12 col-lg-12 col-md-12 order-1 mt-1 mb-1",
                                                                 children=[
                                                                     html.Div(
                                                                         className="row",
@@ -381,6 +241,191 @@ def moneymoved_layout():
                                                             ),
                                                             # -- End of Filters --
                                                             # -- KPI Cards --
+                                                            html.Div(
+                                                                className="row gy-4 mt-1 mb-2",
+                                                                children=[
+                                                                    # html.Div(
+                                                                    #     className="col-lg-4 col-md-4  align-self-end order-4",
+                                                                    #     children=[
+                                                                    #         html.Div(
+                                                                    #             className="card back-color",
+                                                                    #             children=[
+                                                                    #                 html.Div(
+                                                                    #                     className="d-flex row",
+                                                                    #                     children=[
+                                                                    #                         html.Div(
+                                                                    #                             className="col-sm-3 col-md-3 text-center text-sm-left d-flex align-items-center",
+                                                                    #                             children=[
+                                                                    #                                 html.Div(
+                                                                    #                                     className="card-body pb-0 text-sm-start text-center",
+                                                                    #                                     children=[
+                                                                    #                                         html.Img(
+                                                                    #                                             src="../../assets/img/illustrations/OFTW-Logomark-Logo.png",
+                                                                    #                                             height="120",
+                                                                    #                                             alt="Target User",
+                                                                    #                                         )
+                                                                    #                                     ],
+                                                                    #                                 )
+                                                                    #                             ],
+                                                                    #                         ),
+                                                                    #                         html.Div(
+                                                                    #                             className="col-sm-9 col-md-9 pl-0",
+                                                                    #                             children=[
+                                                                    #                                 html.Div(
+                                                                    #                                     className="card-body right-bg h-100",
+                                                                    #                                     id="money-moved-card",
+                                                                    #                                     children=[
+                                                                    #                                         html.H5(
+                                                                    #                                             "Welcome!",
+                                                                    #                                             className="card-title txt-primary mb-2",
+                                                                    #                                         ),
+                                                                    #                                         html.H4(
+                                                                    #                                             "One for the World",
+                                                                    #                                             className="mb-6 txt-orange",
+                                                                    #                                         ),
+                                                                    #                                         # html.Span(
+                                                                    #                                         #     "78% of TARGET",
+                                                                    #                                         #     className="badge bg-label-primary",
+                                                                    #                                         # ),
+                                                                    #                                     ],
+                                                                    #                                 )
+                                                                    #                             ],
+                                                                    #                         ),
+                                                                    #                     ],
+                                                                    #                 )
+                                                                    #             ],
+                                                                    #         )
+                                                                    #     ],
+                                                                    # ),
+                                                                    html.Div(
+                                                                        className="col-lg-4 col-md-4 align-self-end order-4",
+                                                                        children=[
+                                                                            html.Div(
+                                                                                className="card back-color-blue",
+                                                                                children=[
+                                                                                    html.Div(
+                                                                                        className="d-flex row",
+                                                                                        children=[
+                                                                                            html.Div(
+                                                                                                className="col-sm-3 col-md-3 text-center text-sm-left",
+                                                                                                children=[
+                                                                                                    html.Div(
+                                                                                                        className="card-body pb-0 d-flex align-items-center text-sm-start text-center",
+                                                                                                        children=[
+                                                                                                            html.Img(
+                                                                                                                src="../../assets/img/illustrations/OFTW-Logomark-Logo.png",
+                                                                                                                height="120",
+                                                                                                                alt="Target User",
+                                                                                                            )
+                                                                                                        ],
+                                                                                                    )
+                                                                                                ],
+                                                                                            ),
+                                                                                            html.Div(
+                                                                                                className="col-sm-9 col-md-9",
+                                                                                                children=[
+                                                                                                    html.Div(
+                                                                                                        className="card-body right-bg-blue h-100",
+                                                                                                        id="money-moved-card",
+                                                                                                        children=[
+                                                                                                            
+                                                                                                        ],
+                                                                                                    )
+                                                                                                ],
+                                                                                            ),
+                                                                                        ],
+                                                                                    )
+                                                                                ],
+                                                                            )
+                                                                        ],
+                                                                    ),
+                                                                    html.Div(
+                                                                        className="col-lg-4 col-md-4  align-self-end order-4",
+                                                                        children=[
+                                                                            html.Div(
+                                                                                className="card back-color-yellow",
+                                                                                children=[
+                                                                                    html.Div(
+                                                                                        className="d-flex row",
+                                                                                        children=[
+                                                                                            html.Div(
+                                                                                                className="col-sm-3 col-md-3 text-center text-sm-left",
+                                                                                                children=[
+                                                                                                    html.Div(
+                                                                                                        className="card-body pb-0  d-flex align-items-center text-sm-start text-center",
+                                                                                                        children=[
+                                                                                                            html.Img(
+                                                                                                                src="../../assets/img/illustrations/OFTW-Logomark-Logo.png",
+                                                                                                                height="120",
+                                                                                                                alt="Target User",
+                                                                                                            )
+                                                                                                        ],
+                                                                                                    )
+                                                                                                ],
+                                                                                            ),
+                                                                                            html.Div(
+                                                                                                className="col-sm-9 col-md-9",
+                                                                                                children=[
+                                                                                                    html.Div(
+                                                                                                        className="card-body right-bg-yellow h-100",
+                                                                                                        id="cf-money-moved-card",
+                                                                                                        children=[
+                                                                                                        ],
+                                                                                                    )
+                                                                                                ],
+                                                                                            ),
+                                                                                        ],
+                                                                                    )
+                                                                                ],
+                                                                            )
+                                                                        ],
+                                                                    ),
+                                                                    # html.Div(
+                                                                    #     className="col-lg-4 col-md-4  align-self-end order-4",
+                                                                    #     children=[
+                                                                    #         html.Div(
+                                                                    #             className="card back-color-yellow",
+                                                                    #             children=[
+                                                                    #                 html.Div(
+                                                                    #                     className="d-flex row",
+                                                                    #                     children=[
+                                                                    #                         html.Div(
+                                                                    #                             className="col-sm-3 col-md-3 text-center text-sm-left",
+                                                                    #                             children=[
+                                                                    #                                 html.Div(
+                                                                    #                                     className="card-body pb-0  d-flex align-items-center text-sm-start text-center",
+                                                                    #                                     children=[
+                                                                    #                                         html.Img(
+                                                                    #                                             src="../../assets/img/illustrations/OFTW-Logomark-Logo.png",
+                                                                    #                                             height="120",
+                                                                    #                                             alt="Target User",
+                                                                    #                                         )
+                                                                    #                                     ],
+                                                                    #                                 )
+                                                                    #                             ],
+                                                                    #                         ),
+                                                                    #                         html.Div(
+                                                                    #                             className="col-sm-9 col-md-9",
+                                                                    #                             children=[
+                                                                    #                                 html.Div(
+                                                                    #                                     className="card-body right-bg-yellow h-100",
+                                                                    #                                     id="cf-money-moved-card",
+                                                                    #                                     children=[
+                                                                    #                                     ],
+                                                                    #                                 )
+                                                                    #                             ],
+                                                                    #                         ),
+                                                                    #                     ],
+                                                                    #                 )
+                                                                    #             ],
+                                                                    #         )
+                                                                    #     ],
+                                                                    # ),
+                                                                ],
+                                                            ),
+                                                            # -- End of KPI Cards --
+                                                            
+                                                            # -- KPI Cards --
                                                           
                                                             # html.Div(
                                                             #     children=[
@@ -431,7 +476,7 @@ def moneymoved_layout():
                                                             # -- End of KPI Cards --
                                                             # -- Graphs --
                                                             html.Div(
-                                                                className="row gy-4 mb-5",
+                                                                className="row gy-4 mb-1",
                                                                 children=[
                                                                     html.Div(
                                                                         className="col-xxl-6 col-md-6 col-xs-12 col-sm-12 col-xl-12 ",
@@ -443,7 +488,7 @@ def moneymoved_layout():
                                                                                         className="card-body",
                                                                                         children=[
                                                                                             html.Div(
-                                                                                                className="card-title d-flex align-items-center mb-4",
+                                                                                                className="card-title d-flex align-items-center mb-1",
                                                                                                 children=[
                                                                                                     html.Div(
                                                                                                         className="avatar me-2",
@@ -473,7 +518,7 @@ def moneymoved_layout():
                                                                                                     #     ],
                                                                                                     # ),
                                                                                                     chart_header_title_with_ai(
-                                                                                                        title="Money Moved Monthly (Cumulative)",
+                                                                                                        title="Cumulative Money Moved",
                                                                                                         chart_id="money-moved-cumulative-graph",
                                                                                                     ),
                                                                                                     # html.Div([
@@ -513,7 +558,7 @@ def moneymoved_layout():
                                                                                                             ],
                                                                                                             "borderRadius": "10px",
                                                                                                             "padding": "15px",
-                                                                                                            # # "boxShadow": "0 0 20px rgba(0, 0, 0, 0.15)",
+                                                                                                            # "boxShadow": "0 0 10px rgba(0, 0, 0, 0.1)",
                                                                                                         },
                                                                                                     ),
                                                                                                 ],
@@ -534,7 +579,7 @@ def moneymoved_layout():
                                                                                         className="card-body",
                                                                                         children=[
                                                                                             html.Div(
-                                                                                                className="card-title d-flex align-items-center mb-4",
+                                                                                                className="card-title d-flex align-items-center mb-1",
                                                                                                 children=[
                                                                                                     html.Div(
                                                                                                         className="avatar me-2",
@@ -550,7 +595,7 @@ def moneymoved_layout():
                                                                                                         ],
                                                                                                     ),
                                                                                                     chart_header_title_with_ai(
-                                                                                                        title="Counterfactual Money Moved Monthly (Cumulative)",
+                                                                                                        title="Cumulative Money Moved (Counterfactual Scenario)",
                                                                                                         chart_id="cf-money-moved-cumulative-graph",
                                                                                                     ),
                                                                                                     # html.Div(
@@ -588,7 +633,7 @@ def moneymoved_layout():
                                                                 ],
                                                             ),
                                                             html.Div(
-                                                                className="row gy-4 mb-5",
+                                                                className="row gy-4 mb-1",
                                                                 children=[
                                                                     # html.Div(
                                                                     #     className="col-xxl-6 col-md-6 col-xs-12 col-sm-12 col-xl-12 ",
@@ -655,7 +700,7 @@ def moneymoved_layout():
                                                                                         className="card-body",
                                                                                         children=[
                                                                                             html.Div(
-                                                                                                className="card-title d-flex align-items-center mb-4",
+                                                                                                className="card-title d-flex align-items-center mb-1",
                                                                                                 children=[
                                                                                                     html.Div(
                                                                                                         className="avatar me-2",
@@ -671,7 +716,7 @@ def moneymoved_layout():
                                                                                                         ],
                                                                                                     ),
                                                                                                     chart_header_title_with_ai(
-                                                                                                        title="Money Moved Monthly Trend",
+                                                                                                        title="Monthly Donation Trends",
                                                                                                         chart_id="money-moved-line-graph",
                                                                                                     ),
                                                                                                     #  html.Div(
@@ -768,7 +813,7 @@ def moneymoved_layout():
                                                                                         className="card-body",
                                                                                         children=[
                                                                                             html.Div(
-                                                                                                className="card-title d-flex align-items-center mb-4",
+                                                                                                className="card-title d-flex align-items-center mb-1",
                                                                                                 children=[
                                                                                                     html.Div(
                                                                                                         className="avatar me-2",
@@ -784,7 +829,7 @@ def moneymoved_layout():
                                                                                                         ],
                                                                                                     ),
                                                                                                     chart_header_title_with_ai(
-                                                                                                        title="Contribution by Day of the Week",
+                                                                                                        title="Contributions by Day of the Week",
                                                                                                         chart_id="money-moved-heatmap-graph",
                                                                                                     ),
                                                                                                     # html.Div(

@@ -161,9 +161,24 @@ header {
   font-weight: bold;
   color: #fff;
   position: absolute;
+  /* left: 50%;
+  transform: translateX(-50%); */
+}
+
+/* OFTW Logo - initially centered, moves left on scroll */
+.logo.oftw {
   left: 50%;
   transform: translateX(-50%);
 }
+
+/* Arkimetrix logo - fixed on the right, no movement */
+/* .logo.arkimetrix {
+  right: 0px;
+  left: auto;
+  transform: none;
+  position: fixed; 
+  top: 0px; 
+} */
 
 header.sticky {
   position: fixed;

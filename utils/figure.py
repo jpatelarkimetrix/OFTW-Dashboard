@@ -470,7 +470,7 @@ class Figure:
         )
 
         fig.update_layout(
-            # hovermode = "x unified",
+            hovermode = "x unified",
             xaxis = dict(
                 title = "Week of FY",
                 tickmode = 'array',
