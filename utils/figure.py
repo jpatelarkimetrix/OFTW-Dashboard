@@ -9,6 +9,11 @@ import dash_bootstrap_components as dbc
 
 import math
 import polars as pl
+import numpy as np
+
+from utils.data_preparer import DataPreparer
+
+data_preparer = DataPreparer()
 
 class Figure:
 
@@ -25,6 +30,14 @@ class Figure:
         'highlight': '#F2F2F2',   # Light highlight
         'white': '#FFFFFF'
     }
+
+    custom_colorscale = [
+        [0.0, colors['highlight']],     # Start with white
+        # [0.25, self.colors['light']],# Move into a light highlight
+        # [0.5, self.colors['primary']],    # Use an intermediate accent color
+        # [0.75, self.colors['secondary']],# Near the darker teal
+        [1.0, colors['secondary']]    # End with primary
+    ]
 
     def __init__(self):
         pass
@@ -88,7 +101,7 @@ class Figure:
 
         return trace
 
-    def create_kpi_card(self, value, goal):
+    def create_kpi_card(self, value, goal, body_text = "Funds Raised"):
         return html.Div([
         html.H3(f"${value:,.2f}", 
                 style={
@@ -97,12 +110,12 @@ class Figure:
                     'marginBottom': '5px',
                     'fontSize': '28px'
                 }),
-        html.P("Funds Raised", 
+        html.P(body_text, 
                style={
                    'textAlign': 'center',
                    'color': self.colors['text']
                }),
-        html.P(f"of ${goal:,} goal ({value/goal:.1%})", 
+        html.P(f"of ${goal:,} goal ({value/goal:.2%})", 
                style={
                    'textAlign': 'center',
                    'color': self.colors['secondary'],
@@ -146,7 +159,9 @@ class Figure:
         fig.add_trace(go.Scatter(
             x = [x_vals[current_idx]],
             y = [y_vals[current_idx]],
-            mode = 'markers',
+            text = [f"{y_vals[current_idx]/target:,.2%} Achieved"],
+            mode = 'markers+text',
+            textposition = "bottom right",
             marker = dict(
                 color = 'white',
                 size = 13,
@@ -180,11 +195,22 @@ class Figure:
         )
 
         # Add milestones
-        milestones = [0.25, 0.5, 0.75]
+        milestones = [0.25, 0.5, 0.75, 1]
         milestone_values = [target * m for m in milestones]
 
         for value, percent in zip(milestone_values, milestones):
-            label = f"${value:,} ({percent:.0%}) Achieved" if value <= y_vals[current_idx] else f"${value:,} ({percent:.0%})"
+            # label = f"${value:,} ({percent:.0%}) Achieved" if value <= y_vals[current_idx] else f"${value:,} ({percent:.0%})"
+
+            label = ""
+            if value <= y_vals[current_idx]:
+                label = f"${value:,} ({percent:.0%}) Achieved"
+                if percent == 1:
+                    label = f"${value:,} Target Achieved"
+            else:
+                label = f"${value:,} ({percent:.0%})"
+                if percent == 1:
+                    label = f"${value:,} Target"
+
             fig.add_hline(
                 y = value,
                 line = dict(
@@ -194,7 +220,7 @@ class Figure:
                 ),
                 opacity = 0.5,
                 annotation_text = label,
-                annotation_position = "top right",
+                annotation_position = "top left",
             )
 
         # To show trimmed values
@@ -359,7 +385,7 @@ class Figure:
                     symbol="square",
                     size=100,  # fix a tile size; adjust if you want bigger/smaller squares
                     color=df_mosaic["monthly_amount"],
-                    colorscale=px.colors.sequential.Peach,           #TODO: change to One for the World colors
+                    colorscale=self.custom_colorscale,           #TODO: change to One for the World colors
                     colorbar=dict(title="Monthly<br>Amount"),
                     showscale=False,
                     line=dict(color="black", width=1)
@@ -393,4 +419,174 @@ class Figure:
             ),
         )
 
+        return fig
+    
+    def create_calendarplot(self, df: pl.DataFrame) -> go.Figure:
+        """
+        """
+        pdf = df.to_pandas()
+
+        pivot = pdf.pivot_table(
+            index="payment_date_day_of_week",
+            columns="payment_date_week_of_fy",
+            values="payment_amount_usd",
+            aggfunc="sum",
+            fill_value=0
+        )
+
+        # Create a second pivot table containing the date for each cell.
+        # We use the first (or only) payment_date for that cell.
+        pivot_date = pdf.pivot_table(
+            index="payment_date_day_of_week",
+            columns="payment_date_week_of_fy",
+            values="payment_date",
+            aggfunc='first',
+            fill_value="",
+        )
+
+        heatmap = go.Heatmap(
+            x=pivot.columns,
+            y=pivot.index,
+            z=pivot.values,
+            colorscale=self.custom_colorscale,
+            customdata=pivot_date.values,
+            hovertemplate=(
+                "%{customdata|%b %d, %Y}<br>" +
+                # "Week: %{x}<br>" +
+                "%{y}<br>" +
+                "Amount: $%{z:,.2f}<extra></extra>"
+            ),            
+            showscale=True,
+        )
+
+        fig = go.Figure(data=[heatmap])
+        
+        month_week_map = (df
+            .group_by("payment_date_calendar_monthname")
+            .agg([
+                pl.col("payment_date_week_of_fy").min().alias("payment_date_week_of_fy")
+            ])
+            .sort("payment_date_week_of_fy")
+        )
+
+        fig.update_layout(
+            # hovermode = "x unified",
+            xaxis = dict(
+                title = "Week of FY",
+                tickmode = 'array',
+                tickvals = month_week_map["payment_date_week_of_fy"],
+                ticktext = month_week_map["payment_date_calendar_monthname"]
+            ),
+            yaxis = dict(
+                title = "Day of Week",
+                autorange = "reversed",         # Reverse Y so 0=Monday is on top
+                tickmode = 'array',
+                tickvals = [1,2,3,4,5,6,7],
+                ticktext = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+            ),
+            template = self.plotly_template,
+            margin = self.chart_margin,
+        )
+
+        return fig
+    
+    def create_mm_monthly_trendline(self, money_moved_lf, selected_amount_type, selected_drilldown_by):
+        fig = go.Figure()
+        if selected_drilldown_by:
+            lf = (money_moved_lf
+                .group_by(["payment_date_fm", selected_drilldown_by])
+                .agg([
+                    pl.col(selected_amount_type).sum().alias("money_moved_monthly"),
+                    # pl.col("payment_cf_amount_usd").sum().alias("cf_money_moved_monthly"),
+                    pl.col(["payment_date_calendar_month", "payment_date_calendar_monthyear"]).first(),
+                ])
+                .sort("payment_date_fm")
+            )
+
+            unique_traces = data_preparer.get_col_unique_values_lf(lf, selected_drilldown_by)
+
+            df = lf.collect()
+
+            for trace in unique_traces:
+                trace_df = df.filter(pl.col(selected_drilldown_by) == trace).sort("payment_date_fm")
+                fig = fig.add_trace(
+                    self.create_line_trace(
+                        x_values = trace_df["payment_date_calendar_monthyear"],
+                        y_values = trace_df["money_moved_monthly"],
+                        markers_mode = "lines+markers",
+                        marker_size = 8,
+                        # marker_color = self.colors['primary'],
+                        # text_values_list = [f"${val:,.2f}" if val is not None else "" for val in y_vals],
+                        text_position = "top left",
+                        name_for_legend = trace,
+                        # legend_group = "Cumulative Donations",
+                        # line_color = self.colors['primary'],
+                        line_width = 3,
+                        hover_template = "%{y}",
+                    )
+                )
+        else:
+            df = (money_moved_lf
+                .group_by(["payment_date_fm"])
+                .agg([
+                    pl.col(selected_amount_type).sum().alias("money_moved_monthly"),
+                    # pl.col("payment_cf_amount_usd").sum().alias("cf_money_moved_monthly"),
+                    pl.col(["payment_date_calendar_month", "payment_date_calendar_monthyear"]).first(),
+                ])
+                .sort("payment_date_fm")
+                .collect()
+            )
+
+            y_vals = df["money_moved_monthly"].to_list()
+
+            fig = fig.add_trace(
+                    self.create_line_trace(
+                        x_values = df["payment_date_calendar_monthyear"],
+                        y_values = y_vals,
+                        markers_mode = "lines+markers+text",
+                        marker_size = 8,
+                        marker_color = self.colors['primary'],
+                        text_values_list = [f"${val:,.2f}" if val is not None else "" for val in y_vals],
+                        text_position = "top left",
+                        name_for_legend = "MM",
+                        # legend_group = "Cumulative Donations",
+                        line_color = self.colors['primary'],
+                        line_width = 3,
+                        hover_template = "%{text}",
+                    )
+                )
+            
+        fig.update_layout(
+            hovermode = "x unified",
+            # showlegend = False,
+            template = self.plotly_template,
+            margin =  self.chart_margin,
+            xaxis = dict(
+                title = "Month",
+                # tickvals = x_vals,
+                # ticktext = x_vals,
+                showgrid = False,
+                zeroline = False,
+                showline = True,
+                ticks = "outside",
+                tickcolor = self.colors['secondary'],
+            ),
+            yaxis = dict(
+                # title = "Cumulative Donations",
+                # range = [0, target * 1.2],
+                tickformat = "$,.0f",
+                showgrid = False,
+                zeroline = False,
+                showline = False,
+                # showticklabels = False,
+                ticks = "outside",
+                tickcolor = self.colors['secondary'],
+            ),
+            # title = dict(
+            #     text = f"Monthly Cumulative Money Moved",
+            #     x = 0.5,
+            #     font = dict(size = 24),
+            # ),
+        )
+            
         return fig
