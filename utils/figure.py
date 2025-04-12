@@ -475,7 +475,10 @@ class Figure:
                 title = "Week of FY",
                 tickmode = 'array',
                 tickvals = month_week_map["payment_date_week_of_fy"],
-                ticktext = month_week_map["payment_date_calendar_monthname"]
+                ticktext = month_week_map["payment_date_calendar_monthname"],
+                showgrid = True,
+                zeroline = True,   
+                showline = True,
             ),
             yaxis = dict(
                 title = "Day of Week",
