@@ -77,7 +77,7 @@ def chart_header_title_with_ai(chart_id, title):
     return component
 
 
-def page1_layout():
+def moneymoved_layout():
     return html.Div(
         children=[
             html.Div(
@@ -100,6 +100,15 @@ def page1_layout():
                                                     html.Header(
                                                         id="main-header",
                                                         children=[
+                                                            html.Div(
+                                                                html.Img(
+                                                                    src="../../assets/img/illustrations/one_of_the_world_logo.png",
+                                                                    height="55",
+                                                                    className="scaleX-n1-rtl logotext",
+                                                                    alt="View Badge User",
+                                                                ),
+                                                                className="logo",
+                                                            ),
                                                             html.Div(
                                                                 html.Img(
                                                                     src="../../assets/img/illustrations/one_of_the_world_logo.png",

@@ -1,5 +1,5 @@
-from .page1_layout import page1_layout
+from .moneymoved_layout import moneymoved_layout
 
 __all__ = [
-    "page1_layout",
+    "moneymoved_layout",
 ]

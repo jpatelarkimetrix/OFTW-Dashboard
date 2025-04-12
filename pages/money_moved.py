@@ -9,7 +9,7 @@ from utils.data_loader import data_loader
 from utils.data_preparer import DataPreparer
 from utils.figure import Figure
 
-from pages.layouts import page1_layout
+from pages.layouts import moneymoved_layout
 
 dash.register_page(__name__, path = '/')
 
@@ -28,7 +28,7 @@ colors = {
 }
 
 def layout(**kwargs):
-    return page1_layout()
+    return moneymoved_layout()
 
 @callback(
     Output("money-moved-card", "children"),
