@@ -203,13 +203,13 @@ class Figure:
 
             label = ""
             if value <= y_vals[current_idx]:
-                label = f"${value:,} ({percent:.0%}) Achieved"
+                label = f"${value/1e6:.1f}M ({percent:.0%}) Achieved"
                 if percent == 1:
-                    label = f"${value:,} Target Achieved"
+                    label = f"${value/1e6:.1f}M Target Achieved"
             else:
-                label = f"${value:,} ({percent:.0%})"
+                label = f"${value/1e6:.1f}M ({percent:.0%})"
                 if percent == 1:
-                    label = f"${value:,} Target"
+                    label = f"${value/1e6:.1f}M Target"
 
             fig.add_hline(
                 y = value,
@@ -574,7 +574,7 @@ class Figure:
             yaxis = dict(
                 # title = "Cumulative Donations",
                 # range = [0, target * 1.2],
-                tickformat = "$,.0f",
+                tickformat = "$,.3s",
                 showgrid = False,
                 zeroline = False,
                 showline = False,
