@@ -1,0 +1,291 @@
+/*
+* demo.css
+* File include item demo only specific css only
+******************************************************************************/
+
+.menu .app-brand.demo {
+  height: 64px;
+  margin-top: 12px;
+}
+
+.app-brand-logo.demo svg {
+  width: 22px;
+  height: 38px;
+}
+
+.app-brand-text.demo {
+  font-size: 1.75rem;
+  letter-spacing: -0.5px;
+}
+
+/* ! For .layout-navbar-fixed added fix padding top to .layout-page */
+/* Detached navbar */
+.layout-navbar-fixed .layout-wrapper:not(.layout-horizontal):not(.layout-without-menu) .layout-page {
+  padding-top: 74px !important;
+}
+/* Default navbar */
+.layout-navbar-fixed .layout-wrapper:not(.layout-without-menu) .layout-page {
+  padding-top: 64px !important;
+}
+.docs-page .layout-navbar-fixed.layout-wrapper:not(.layout-without-menu) .layout-page,
+.docs-page .layout-menu-fixed.layout-wrapper:not(.layout-without-menu) .layout-page {
+  padding-top: 62px !important;
+}
+
+/* Navbar page z-index issue solution */
+.content-wrapper .navbar {
+  z-index: auto;
+}
+
+/*
+* Content
+******************************************************************************/
+
+.demo-blocks > * {
+  display: block !important;
+}
+
+.demo-inline-spacing > * {
+  margin: 1rem 0.375rem 0 0 !important;
+}
+
+/* ? .demo-vertical-spacing class is used to have vertical margins between elements. To remove margin-top from the first-child, use .demo-only-element class with .demo-vertical-spacing class. For example, we have used this class in forms-input-groups.html file. */
+.demo-vertical-spacing > * {
+  margin-top: 1rem !important;
+  margin-bottom: 0 !important;
+}
+.demo-vertical-spacing.demo-only-element > :first-child {
+  margin-top: 0 !important;
+}
+
+.demo-vertical-spacing-lg > * {
+  margin-top: 1.875rem !important;
+  margin-bottom: 0 !important;
+}
+.demo-vertical-spacing-lg.demo-only-element > :first-child {
+  margin-top: 0 !important;
+}
+
+.demo-vertical-spacing-xl > * {
+  margin-top: 5rem !important;
+  margin-bottom: 0 !important;
+}
+.demo-vertical-spacing-xl.demo-only-element > :first-child {
+  margin-top: 0 !important;
+}
+
+.rtl-only {
+  display: none !important;
+  text-align: left !important;
+  direction: ltr !important;
+}
+
+[dir='rtl'] .rtl-only {
+  display: block !important;
+}
+
+/* Dropdown buttons going out of small screens */
+@media (max-width: 576px) {
+  #dropdown-variation-demo .btn-group .text-truncate {
+    width: 231px;
+    position: relative;
+  }
+  #dropdown-variation-demo .btn-group .text-truncate::after {
+    position: absolute;
+    top: 45%;
+    right: 0.65rem;
+  }
+}
+
+/*
+* Layout demo
+******************************************************************************/
+
+.layout-demo-wrapper {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  margin-top: 1rem;
+}
+.layout-demo-placeholder img {
+  width: 900px;
+}
+.layout-demo-info {
+  text-align: center;
+  margin-top: 1rem;
+}
+.layout-page.window-scrolled .p-top-custom{
+  padding-top :10rem !important;
+}
+.layout-page.window-scrolled .container-p-y:not([class^=pt-]):not([class*=" pt-"]) {
+  padding-block-start: 12rem !important;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  line-height: 120px;
+  height: 70px;
+  background: #2675f8;
+  color: #f9f9f9;
+  text-shadow: 1px -1px #000;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.logo {
+  transition: all 0.5s ease-in-out;
+  font-size: 28px;
+  font-weight: bold;
+  color: #fff;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+header.sticky {
+  position: fixed;
+  top: 0;
+  height: 60px;
+  width: 100%;
+  background: #2675f8;
+  z-index: 999;
+  justify-content: flex-start;
+}
+
+header.sticky .logo {
+  left: 20px;
+  transform: translateX(0);
+  font-size: 24px;
+}
+
+.ripple{
+  top: 7px;
+  z-index: 1;
+  width: 7px;
+  right: 3px;
+  height: 7px;
+  content: "";
+  border-radius: 50%;
+  position: absolute;
+  background: #f93c00;
+  animation: ripple 1.2s ease-out infinite;
+}
+
+@keyframes ripple {
+  0%,35% {
+      transform: scale(0);
+      opacity: 1
+  }
+
+  50% {
+      transform: scale(1.5);
+      opacity: .8
+  }
+
+  to {
+      opacity: 0;
+      transform: scale(4)
+  }
+}
+
+.mb-5{
+  margin-bottom: 1.7rem !important;
+}
+
+.mb-6{
+  margin-bottom: 2rem !important;
+}
+.form-check-input:checked {
+  background-color: #2675f8;
+  border-color: #00d0eb;
+}
+
+.bg-footer-theme{
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.txt-white{
+  color: white  !important;
+}
+
+.back-color{
+  background-color: #fb6a37!important;
+  background: linear-gradient(90deg, #e73e02 0%, #ffe8e0 50%, #7c2101 100%);
+
+}
+.right-bg{
+  background: #ffded4;
+}
+.txt-orange {
+  color: #fc6c41 !important;
+}
+
+.back-color-yellow{
+  background-color: #c6e539 !important;
+  background: linear-gradient(90deg, #94b112 0%, #f6ff9f 50%, #CDDC39 100%);
+}
+.right-bg-yellow{
+  background: #f4ffcc;
+}
+.right-bg-yellow h3{
+  color: #88ab03 !important;
+  font-size: 1.5rem!important;
+}
+.right-bg-yellow p{
+  font-weight: 500;
+}
+.right-bg-yellow p:last-child{
+ 
+text-align: center;
+    color: rgb(237 255 183)!important;
+    font-size: 14px;
+    background: #222121;
+    width: 50%;
+    margin: 0 auto;
+    border-radius: 4px;
+    padding: 3px;
+    line-height: 20px;
+    font-weight: 500;
+  }
+
+  .back-color-blue{
+    background-color: #2e76f3 !important;
+    background: linear-gradient(90deg, #105ee5 0%, #b8d2ff 50%, #03A9F4 100%);
+  }
+  .right-bg-blue{
+    background: #d0e1ff;}
+
+  .right-bg-blue h3{
+    color: #004cd3 !important  ;
+    font-size: 1.5rem!important;
+  }
+  .right-bg-blue p{
+    font-weight: 500;
+  }
+  .right-bg-blue p:last-child{
+   
+text-align: center;
+    color: rgb(255 255 255)!important;
+    font-size: 14px;
+    background: #3477ee;
+    width: 50%;
+    margin: 0 auto;
+    border-radius: 4px;
+    padding: 3px;
+    line-height: 20px;
+    font-weight: 500;
+    
+    }

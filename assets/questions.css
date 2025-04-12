@@ -1,0 +1,5 @@
+.ag-header-cell-text {
+    text-overflow: clip !important;
+    overflow: visible !important;
+    white-space: normal !important;
+}

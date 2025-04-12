@@ -22,8 +22,8 @@ class Figure:
     
     # One for the World color palette
     colors = {
-        'primary': '#006466',     # Teal/blue-green
-        'secondary': '#065A60',   # Darker teal
+        'primary': '#2e76f3',     # Teal/blue-green
+        'secondary': '#2e76f3',   # Darker teal
         'accent': '#0B525B',      # Another shade
         'light': '#144552',       # Lighter shade
         'text': '#1B3A4B',        # For text
