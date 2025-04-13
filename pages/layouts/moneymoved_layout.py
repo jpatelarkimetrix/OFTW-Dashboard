@@ -113,15 +113,6 @@ def moneymoved_layout():
                                                                 ),
                                                                 className="logo oftw",
                                                             ),
-                                                            # html.Div(
-                                                            #     html.Img(
-                                                            #         src="../../assets/img/illustrations/93064_Arkimetrix-Analytics-Ltd-1.png",
-                                                            #         height="55",
-                                                            #         # className="scaleX-n1-rtl logotext",
-                                                            #         alt="View Badge User",
-                                                            #     ),
-                                                            #     className="logo arkimetrix",
-                                                            # ),
                                                         ],
                                                     ),
                                                     html.Div(
@@ -548,6 +539,31 @@ def moneymoved_layout():
                                                                                                 ],
                                                                                             ),
                                                                                             html.Div(
+                                                                                                className="row",  # Add a row wrapper for proper Bootstrap grid behavior
+                                                                                                children=[
+                                                                                                    html.Div(
+                                                                                                        className="col-md-6 col-12",  # Half width on md and full on smaller screens
+                                                                                                        children=[
+                                                                                                            dbc.RadioItems(
+                                                                                                                options=[
+                                                                                                                    {
+                                                                                                                        "label": "Actual MM",
+                                                                                                                        "value": "payment_amount_usd",
+                                                                                                                    },
+                                                                                                                    {
+                                                                                                                        "label": "Counterfactual MM",
+                                                                                                                        "value": "payment_cf_amount_usd",
+                                                                                                                    },
+                                                                                                                ],
+                                                                                                                value="payment_amount_usd",
+                                                                                                                id="mm-cf-cumulative-radio-filter",
+                                                                                                                inline=True,
+                                                                                                            )
+                                                                                                        ],
+                                                                                                    ),
+                                                                                                ],
+                                                                                            ),
+                                                                                            html.Div(
                                                                                                 className="table bordered-table mb-0 dataTable",
                                                                                                 children=[
                                                                                                     dcc.Graph(
@@ -595,13 +611,13 @@ def moneymoved_layout():
                                                                                                         ],
                                                                                                     ),
                                                                                                     chart_header_title_with_ai(
-                                                                                                        title="Cumulative Money Moved (Counterfactual Scenario)",
-                                                                                                        chart_id="cf-money-moved-cumulative-graph",
+                                                                                                        title="Contributions by Day of the Week",
+                                                                                                        chart_id="money-moved-heatmap-graph",
                                                                                                     ),
                                                                                                     # html.Div(
                                                                                                     #     children=[
                                                                                                     #         html.H6(
-                                                                                                    #             "Counterfactual Money Moved Monthly (Cumulative)",
+                                                                                                    #             "Contribution by Day of the Week",
                                                                                                     #             className="text-lg mb-3 ml-1",
                                                                                                     #         ),
                                                                                                     #     ],
@@ -612,7 +628,7 @@ def moneymoved_layout():
                                                                                                 className="table bordered-table mb-0 dataTable",
                                                                                                 children=[
                                                                                                     dcc.Graph(
-                                                                                                        id="cf-money-moved-cumulative-graph",
+                                                                                                        id="money-moved-heatmap-graph",
                                                                                                         style={
                                                                                                             "backgroundColor": colors[
                                                                                                                 "white"
@@ -691,7 +707,7 @@ def moneymoved_layout():
                                                                     #     ],
                                                                     # ),
                                                                     html.Div(
-                                                                        className="col-xxl-6 col-md-6 col-xs-12 col-sm-12 col-xl-12 ",
+                                                                        className="col-xxl-4 col-md-4 col-xs-12 col-sm-12 col-xl-12 ",
                                                                         children=[
                                                                             html.Div(
                                                                                 className="card h-100",
@@ -803,67 +819,6 @@ def moneymoved_layout():
                                                                             ),
                                                                         ],
                                                                     ),
-                                                                    html.Div(
-                                                                        className="col-xxl-6 col-md-6 col-xs-12 col-sm-12 col-xl-12 ",
-                                                                        children=[
-                                                                            html.Div(
-                                                                                className="card h-100",
-                                                                                children=[
-                                                                                    html.Div(
-                                                                                        className="card-body",
-                                                                                        children=[
-                                                                                            html.Div(
-                                                                                                className="card-title d-flex align-items-center mb-1",
-                                                                                                children=[
-                                                                                                    html.Div(
-                                                                                                        className="avatar me-2",
-                                                                                                        children=[
-                                                                                                            html.Span(
-                                                                                                                className="avatar-initial rounded-2 bg-label-danger",
-                                                                                                                children=[
-                                                                                                                    html.I(
-                                                                                                                        className="bx bx-trending-up bx-lg text-danger"
-                                                                                                                    )
-                                                                                                                ],
-                                                                                                            )
-                                                                                                        ],
-                                                                                                    ),
-                                                                                                    chart_header_title_with_ai(
-                                                                                                        title="Contributions by Day of the Week",
-                                                                                                        chart_id="money-moved-heatmap-graph",
-                                                                                                    ),
-                                                                                                    # html.Div(
-                                                                                                    #     children=[
-                                                                                                    #         html.H6(
-                                                                                                    #             "Contribution by Day of the Week",
-                                                                                                    #             className="text-lg mb-3 ml-1",
-                                                                                                    #         ),
-                                                                                                    #     ],
-                                                                                                    # ),
-                                                                                                ],
-                                                                                            ),
-                                                                                            html.Div(
-                                                                                                className="table bordered-table mb-0 dataTable",
-                                                                                                children=[
-                                                                                                    dcc.Graph(
-                                                                                                        id="money-moved-heatmap-graph",
-                                                                                                        style={
-                                                                                                            "backgroundColor": colors[
-                                                                                                                "white"
-                                                                                                            ],
-                                                                                                            "borderRadius": "10px",
-                                                                                                            "padding": "15px",
-                                                                                                            # "boxShadow": "0 0 20px rgba(0, 0, 0, 0.15)",
-                                                                                                        },
-                                                                                                    ),
-                                                                                                ],
-                                                                                            ),
-                                                                                        ],
-                                                                                    ),
-                                                                                ],
-                                                                            ),
-                                                                        ],
-                                                                    ),
                                                                 ],
                                                             ),
                                                             # Floating Draggable AI Panel
@@ -958,6 +913,17 @@ def moneymoved_layout():
                                                                                         "© 2025. All rights reserved.",
                                                                                     ],
                                                                                 ),
+                                                                                html.A(
+                                                                                    html.Img(
+                                                                                        src="../../assets/img/illustrations/93064_Arkimetrix-Analytics-Ltd-1.png",
+                                                                                        height="55",
+                                                                                        alt="View Badge User",
+                                                                                        className="scaleX-n1-rtl logotext",
+                                                                                    ),
+                                                                                    href="https://arkimetrix.com/",
+                                                                                    target="_blank",  # optional, opens in a new tab
+                                                                                    # className="logo arkimetrix",
+                                                                                )
                                                                             ],
                                                                         )
                                                                     ],

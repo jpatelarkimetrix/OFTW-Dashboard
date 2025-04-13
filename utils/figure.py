@@ -234,7 +234,7 @@ class Figure:
             template = self.plotly_template,
             margin =  dict(l = 50, r = 10, t = 10, b = 10),
             xaxis = dict(
-                title = "Month",
+                # title = "Month",
                 tickvals = x_vals,
                 ticktext = x_vals,
                 showgrid = False,
@@ -559,10 +559,11 @@ class Figure:
         fig.update_layout(
             hovermode = "x unified",
             # showlegend = False,
+            legend = dict(title = dict(text = "Select (Double-Click) / De-Select (One-Click)", side = "top center"), yanchor = "top", y = 1.1, x = 0.5, xanchor = "center", orientation = "h"),
             template = self.plotly_template,
             margin =  self.chart_margin,
             xaxis = dict(
-                title = "Month",
+                # title = "Month",
                 # tickvals = x_vals,
                 # ticktext = x_vals,
                 showgrid = False,

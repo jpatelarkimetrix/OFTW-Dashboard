@@ -148,7 +148,7 @@ header {
   font-size: 32px;
   line-height: 120px;
   height: 70px;
-  background: #2675f8;
+  background:  #FF6F3C;
   color: #f9f9f9;
   text-shadow: 1px -1px #000;
   transition: all 0.3s ease;
@@ -185,7 +185,7 @@ header.sticky {
   top: 0;
   height: 60px;
   width: 100%;
-  background: #2675f8;
+  background:  #FF6F3C;
   z-index: 999;
   justify-content: flex-start;
 }
@@ -239,7 +239,7 @@ header.sticky .logo {
 }
 
 .bg-footer-theme{
-  background-color: black;
+  background-color: rgb(107, 121, 180);
   display: flex;
   justify-content: center;
   align-items: center;

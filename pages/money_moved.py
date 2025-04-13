@@ -53,20 +53,21 @@ def toggle_ai_modal(ai_icon_click_list, is_ai_modal_open):
     Output("money-moved-card", "children"),
     Output("cf-money-moved-card", "children"),
     Output("money-moved-cumulative-graph", "figure"),
-    Output("cf-money-moved-cumulative-graph", "figure"),
+    # Output("cf-money-moved-cumulative-graph", "figure"),
     # Output("money-moved-mosaic-graph", "figure"),
     Output("money-moved-heatmap-graph", "figure"),
     Output("ai-message-store", "data", allow_duplicate = True),
     Input("fy-filter", "value"),
-    Input("payment-platform-filter", "value"),
-    Input("chapter-type-filter", "value"),
+    Input("mm-cf-cumulative-radio-filter", "value"),
+    # Input("payment-platform-filter", "value"),
+    # Input("chapter-type-filter", "value"),
     Input({"type": "ai-icon", "chart": ALL}, "n_clicks"),
     [
         State("ai-message-store", "data"),
     ],
     prevent_initial_call = "initial_duplicate"
 )
-def update_kpis_graphs(selected_fy, selected_payment_platform, selected_chapter_type, ai_icon_clicks_list, existing_ai_messages):
+def update_kpis_graphs(selected_fy, selected_amount_type, ai_icon_clicks_list, existing_ai_messages):
     triggered_id = ctx.triggered_id
     chart_insight = None
 
@@ -83,11 +84,11 @@ def update_kpis_graphs(selected_fy, selected_payment_platform, selected_chapter_
     if selected_fy:
         filters.append(("payment_date_fy", "==", selected_fy))
 
-    if selected_payment_platform:
-        filters.append(("payment_platform", "in", selected_payment_platform))
+    # if selected_payment_platform:
+    #     filters.append(("payment_platform", "in", selected_payment_platform))
 
-    if selected_chapter_type:
-        filters.append(("pledge_chapter_type", "in", selected_chapter_type))
+    # if selected_chapter_type:
+    #     filters.append(("pledge_chapter_type", "in", selected_chapter_type))
 
     merged_lf = data_preparer.filter_data("merged", filters)
 
@@ -123,9 +124,10 @@ def update_kpis_graphs(selected_fy, selected_payment_platform, selected_chapter_
         .collect()
     )
  
-    mm_monthly_fig = figure_instance.create_monthly_mm_graph(money_moved_ytd_df, "money_moved_cumulative", fund_raise_target)
-
-    cf_mm_monthly_fig = figure_instance.create_monthly_mm_graph(money_moved_ytd_df, "cf_money_moved_cumulative", cf_fund_raise_target)
+    if "cf" in selected_amount_type:
+        mm_monthly_fig = figure_instance.create_monthly_mm_graph(money_moved_ytd_df, "cf_money_moved_cumulative", cf_fund_raise_target)
+    else:
+        mm_monthly_fig = figure_instance.create_monthly_mm_graph(money_moved_ytd_df, "money_moved_cumulative", fund_raise_target)
 
     # mm_mosaic_fig = figure_instance.create_money_mural_mosaic(money_moved_ytd_df)
 
@@ -136,8 +138,8 @@ def update_kpis_graphs(selected_fy, selected_payment_platform, selected_chapter_
     if chart_insight:
         if chart_insight == "money-moved-cumulative-graph":
             ai_insight.append(data_preparer.get_llm_insight(mm_monthly_fig.to_json()))
-        elif chart_insight == "cf-money-moved-cumulative-graph":
-            ai_insight.append(data_preparer.get_llm_insight(cf_mm_monthly_fig.to_json()))
+        # elif chart_insight == "cf-money-moved-cumulative-graph":
+        #     ai_insight.append(data_preparer.get_llm_insight(mm_monthly_fig.to_json()))
         elif chart_insight == "money-moved-heatmap-graph":
             ai_insight.append(data_preparer.get_llm_insight(mm_heatmap_fig.to_json()))
         # else:
@@ -145,7 +147,7 @@ def update_kpis_graphs(selected_fy, selected_payment_platform, selected_chapter_
 
     new_ai_messages = ai_insight + existing_ai_messages if len(ai_insight) > 0 else existing_ai_messages
 
-    return mm_card, cf_mm_card, mm_monthly_fig, cf_mm_monthly_fig, mm_heatmap_fig, new_ai_messages
+    return mm_card, cf_mm_card, mm_monthly_fig, mm_heatmap_fig, new_ai_messages
 
 
 @callback(
