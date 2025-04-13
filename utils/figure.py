@@ -9,11 +9,15 @@ import dash_bootstrap_components as dbc
 
 import math
 import polars as pl
+import pandas as pd
 import numpy as np
 
 from utils.data_preparer import DataPreparer
 
 data_preparer = DataPreparer()
+
+# Define your total target ARR
+TOTAL_TARGET = 1_200_000
 
 class Figure:
 
@@ -590,4 +594,95 @@ class Figure:
             # ),
         )
             
+        return fig
+    
+    # Define the Sankey generator function
+    def create_active_pledge_arr_sankey(self, df: pl.DataFrame, view_mode: str = "actual", total_target: float = TOTAL_TARGET) -> go.Figure:
+
+        grouped = df.group_by(["pledge_chapter_type", "pledge_frequency"]).agg(
+            pl.col("pledge_contribution_arr_usd").sum().alias("actual_arr")
+        ).to_pandas()
+
+        if view_mode == "target":
+            total_actual = grouped["actual_arr"].sum()
+            grouped["target_arr"] = (grouped["actual_arr"] / total_actual) * total_target
+            grouped["gap_arr"] = (grouped["target_arr"] - grouped["actual_arr"]).clip(lower=0)
+
+        chapters = grouped["pledge_chapter_type"].unique().tolist()
+        freqs = grouped["pledge_frequency"].unique().tolist()
+        sinks = ["Actual ARR"] if view_mode == "actual" else ["Actual ARR", "Gap to Target"]
+        all_nodes = chapters + freqs + sinks
+        node_idx = {label: idx for idx, label in enumerate(all_nodes)}
+
+        sources, targets, values = [], [], []
+
+        for _, row in grouped.iterrows():
+            ch = row["pledge_chapter_type"]
+            fr = row["pledge_frequency"]
+            actual = row["actual_arr"]
+
+            sources.append(node_idx[ch])
+            targets.append(node_idx[fr])
+            values.append(actual if view_mode == "actual" else actual + row["gap_arr"])
+
+        flow_to_actual = grouped.groupby("pledge_frequency")["actual_arr"].sum().to_dict()
+
+        flow_to_gap = {}
+        if view_mode == "target" and "gap_arr" in grouped.columns:
+            flow_to_gap = grouped.groupby("pledge_frequency")["gap_arr"].sum().to_dict()
+
+        for fr in freqs:
+            actual_val = flow_to_actual.get(fr, 0)
+            gap_val = flow_to_gap.get(fr, 0)
+
+            if actual_val > 0:
+                sources.append(node_idx[fr])
+                targets.append(node_idx["Actual ARR"])
+                values.append(actual_val)
+
+            if view_mode == "target" and gap_val > 0:
+                sources.append(node_idx[fr])
+                targets.append(node_idx["Gap to Target"])
+                values.append(gap_val)
+
+        fig = go.Figure(data=[go.Sankey(
+            node=dict(
+                pad=15,
+                thickness=20,
+                label=all_nodes,
+                color=[
+                    "#006466" if n in chapters else
+                    "#0B525B" if n in freqs else
+                    "#2D6A4F" if n == "Actual ARR" else
+                    "#D00000" if n == "Gap to Target" else
+                    "#ccc" for n in all_nodes
+                ],
+                hovertemplate=(
+                    "<b>%{label}</b><br>" +
+                    "Total Value Through Node: $%{value:,.3s}<extra></extra>"
+                )
+            ),
+            link=dict(
+                source=sources,
+                target=targets,
+                value=values,
+                hovertemplate=(
+                    "<b>Flow</b>: %{source.label} → %{target.label}<br>" +
+                    "ARR Amount: <b>$%{value:,.3s}</b><extra></extra>"
+                ),
+                color="rgba(0,100,100,0.3)"
+            ),
+        )])
+
+        fig.update_layout(
+            title=(
+                "Annualized Run Rate Flow " + 
+                (f"(What it would take to reach ${total_target/1e6:.1f}M)" if view_mode == "target" else "") +
+                " : Chapter Type → Frequency → " +
+                ("Current ARR" if view_mode == "actual" else f"Current ARR & Remaining")
+            ),
+            font_size=12,
+            margin=dict(t=30, l=10, r=10, b=10),
+        )
+
         return fig

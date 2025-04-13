@@ -819,6 +819,87 @@ def moneymoved_layout():
                                                                             ),
                                                                         ],
                                                                     ),
+                                                                    html.Div(
+                                                                        className="col-xxl-8 col-md-8 col-xs-12 col-sm-12 col-xl-12 ",
+                                                                        children=[
+                                                                            html.Div(
+                                                                                className="card h-100",
+                                                                                children=[
+                                                                                    html.Div(
+                                                                                        className="card-body",
+                                                                                        children=[
+                                                                                            html.Div(
+                                                                                                className="card-title d-flex align-items-center mb-1",
+                                                                                                children=[
+                                                                                                    html.Div(
+                                                                                                        className="avatar me-2",
+                                                                                                        children=[
+                                                                                                            html.Span(
+                                                                                                                className="avatar-initial rounded-2 bg-label-danger",
+                                                                                                                children=[
+                                                                                                                    html.I(
+                                                                                                                        className="bx bx-trending-up bx-lg text-danger"
+                                                                                                                    )
+                                                                                                                ],
+                                                                                                            )
+                                                                                                        ],
+                                                                                                    ),
+                                                                                                    chart_header_title_with_ai(
+                                                                                                        title="Active Pledge ARR (Annualized Run Rate)",
+                                                                                                        chart_id="active-pledge-arr-sankey-graph",
+                                                                                                    ),
+                                                                                                    # html.Div(
+                                                                                                    #     children=[
+                                                                                                    #         html.H6(
+                                                                                                    #             "Contribution by Day of the Week",
+                                                                                                    #             className="text-lg mb-3 ml-1",
+                                                                                                    #         ),
+                                                                                                    #     ],
+                                                                                                    # ),
+                                                                                                ],
+                                                                                            ),
+                                                                                            html.Div(
+                                                                                                className="row",  # Add a row wrapper for proper Bootstrap grid behavior
+                                                                                                children=[
+                                                                                                    html.Div(
+                                                                                                        className="col-md-6 col-12",  # Half width on md and full on smaller screens
+                                                                                                        children=[
+                                                                                                            dbc.RadioItems(
+                                                                                                                id="active-pledge-arr-sankey-view-mode",
+                                                                                                                options=[
+                                                                                                                    {"label": "Current ARR Only", "value": "actual"},
+                                                                                                                    {"label": "Current ARR + Remaining to Target", "value": "target"},
+                                                                                                                ],
+                                                                                                                value="actual",
+                                                                                                                inline=True,
+                                                                                                                style={"marginBottom": "20px"}
+                                                                                                            ),
+                                                                                                        ],
+                                                                                                    ),
+                                                                                                ],
+                                                                                            ),
+                                                                                            html.Div(
+                                                                                                className="table bordered-table mb-0 dataTable",
+                                                                                                children=[
+                                                                                                    dcc.Graph(
+                                                                                                        id="active-pledge-arr-sankey-graph",
+                                                                                                        style={
+                                                                                                            "backgroundColor": colors[
+                                                                                                                "white"
+                                                                                                            ],
+                                                                                                            "borderRadius": "10px",
+                                                                                                            "padding": "15px",
+                                                                                                            # "boxShadow": "0 0 20px rgba(0, 0, 0, 0.15)",
+                                                                                                        },
+                                                                                                    ),
+                                                                                                ],
+                                                                                            ),
+                                                                                        ],
+                                                                                    ),
+                                                                                ],
+                                                                            ),
+                                                                        ],
+                                                                    ),
                                                                 ],
                                                             ),
                                                             # Floating Draggable AI Panel

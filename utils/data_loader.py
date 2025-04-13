@@ -51,6 +51,9 @@ class DataLoader:
 
 parquet_files = {
     "merged": "merged.parquet",
+    "pledges": "pledges.parquet",
+    "payments": "payments.parquet",
+    "pledge_active_arr": "pledge_active_arr.parquet",
 }
 
 data_loader = DataLoader(parquet_files)

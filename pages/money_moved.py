@@ -200,6 +200,45 @@ def update_mm_monthly_trendline(selected_fy, selected_amount_type, selected_dril
     return mm_monthly_trendline_fig , new_ai_messages
 
 @callback(
+    Output("active-pledge-arr-sankey-graph", "figure"),
+    Output("ai-message-store", "data", allow_duplicate = True),
+    Input("fy-filter", "value"),
+    Input("active-pledge-arr-sankey-view-mode", "value"),
+    Input({"type": "ai-icon", "chart": ALL}, "n_clicks"),
+    State("ai-message-store", "data"),
+    prevent_initial_call = "initial_duplicate"
+)
+def update_active_pledge_arr_sankey(selected_fy, selected_view_mode, ai_icon_clicks_list, existing_ai_messages):
+    triggered_id = ctx.triggered_id
+    chart_insight = None
+
+    # Check if the triggered_id is a dictionary and has a "type" key
+    # This is to check if the triggered_id is from the ai-icon
+    if triggered_id and isinstance(triggered_id, dict) and "type" in triggered_id:
+        chart_insight = triggered_id.get("chart")
+
+    filters = []
+
+    if selected_fy:
+        filters.append(("pledge_starts_at_fy", "==", selected_fy))
+
+    pledge_active_arr_lf = data_preparer.filter_data("pledge_active_arr", filters)
+
+    active_pledge_arr_sankey_graph = figure_instance.create_active_pledge_arr_sankey(pledge_active_arr_lf.collect(), selected_view_mode)
+
+    # For AI insight
+    ai_insight = []
+    if chart_insight:
+        if chart_insight =="active-pledge-arr-sankey-graph":
+            ai_insight.append(data_preparer.get_llm_insight(active_pledge_arr_sankey_graph.to_json()))
+        # else:
+        #     ai_insight.append("No insight available for this chart.")
+
+    new_ai_messages = ai_insight + existing_ai_messages if len(ai_insight) > 0 else existing_ai_messages
+
+    return active_pledge_arr_sankey_graph, new_ai_messages
+
+@callback(
     Output("ai-output", "children"),
     Input("ai-message-store", "data")
 )
