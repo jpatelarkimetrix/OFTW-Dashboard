@@ -1,0 +1,177 @@
+Original Name,Standardized Name
+UC San Diego,University California San Diego
+MIT Sloan School of Management,Massachusetts Institute of Technology
+University of Manchester,University Manchester
+University of Pennsylvania Wharton MBA,University Pennsylvania Wharton MBA
+University of Virginia,University Virginia
+George Washington University,George Washington University
+Vanderbilt University,Vanderbilt University
+Stanford University (UG),Stanford University
+BlackRock,BlackRock
+Fort Lewis College,Fort Lewis College
+Google,Google
+University of St Andrews,University St Andrews
+Stanford Graduate School of Business,Stanford University
+Union College,Union College
+Georgetown University,Georgetown University
+University of Cambridge,University Cambridge
+Columbia University,Columbia University
+McGill University,McGill University
+Fuqua School of Business (Duke),Duke
+University of Maryland,University Maryland
+University of Calgary (Undergrad),Undergrad
+Princeton University,Princeton University
+University of Michigan,University Michigan
+University of Pennsylvania (UG),UG
+Harvard Law School,Harvard University
+McKinsey,McKinsey and
+Brown University,Brown University
+Meta,Facebook
+Queen's University,Queen's University
+Australian National University,Australian National University
+News Corp,News
+Kellogg School of Management,Northwestern University
+University of Pennsylvania Law School,University Pennsylvania Law School
+University of British Columbia,University British Columbia
+William and Mary,William and Mary
+Syracuse University,Syracuse University
+UNC Kenan-Flagler (MBA),MBA
+University of Cincinnati,University Cincinnati
+Villanova University,Villanova University
+Microsoft,Microsoft
+University of Saskatchewan,University Saskatchewan
+University of Queensland,University Queensland
+Tepper School of Business,Carnegie Mellon University
+Durham University,Durham University
+Tufts University,Tufts University
+University of Melbourne,University Melbourne
+University of Waterloo,University Waterloo
+Bain,Bain
+Duke University,Duke University
+Northeastern University,Northeastern University
+University of New South Wales,University New South Wales
+Boston College,Boston College
+Darden School of Business (UVA),University Virginia
+Okta,Okta
+London School of Economics,London School of Economics
+University of Nebraska Medical Center,University Nebraska Medical Center
+Harvard Business School,Harvard University
+University of Victoria,University Victoria
+University of Exeter,University Exeter
+University of Virginia Law School,University Virginia Law School
+Thomas Jefferson University,Thomas Jefferson University
+Virginia Commonwealth University,Virginia Commonwealth University
+UNC Chapel Hill (Undergrad),Undergrad
+University of Florida,University Florida
+Benevity,Benevity
+California Institute of Technology,California Institute of Technology
+University of Alberta,University Alberta
+Ivey Business School,Western University
+University of Connecticut (Stamford),Stamford
+University of Texas Austin,University Texas Austin
+Accenture,Accenture
+Wesleyan University,Wesleyan University
+University of Notre Dame,University Notre Dame
+Netflix,Netflix
+Other,Other
+Vertex Pharmaceuticals,Vertex
+McMaster University,McMaster University
+Wellesley College,Wellesley College
+Spotify,Spotify
+UC Berkeley,University California Berkeley
+Harvard College,Harvard University
+Florida State University,Florida State University
+Boston Consulting Group,Boston Consulting Group
+Texas A&M University,Texas AandM University
+Tuck School of Business,Dartmouth College
+University of Calgary Law,University Calgary Law
+University of Central Florida,University Central Florida
+FTI Consulting,FTI Consulting
+Pennsylvania State University,Pennsylvania State University
+Drexel University,Drexel University
+Blue Cross Blue Shield North Carolina,Blue Cross Blue Shield
+The College of Wooster,The College of Wooster
+Brock University,Brock University
+Concordia University,Concordia University
+Lehigh University,Lehigh University
+Yale SOM (MBA),MBA
+Morgan Stanley,Morgan Stanley
+University of Nebraska College of Law,University Nebraska College of Law
+Western University,Western University
+Yale College,Yale University
+University of Oxford,University Oxford
+ZS Associates,ZS
+Adobe Inc.,Adobe
+Rockwell Spark,Rockwell Spark
+Washington University School of Law,Washington University School of Law
+Bain Capital Community Partnership,Bain Capital Community Partnership
+Rutgers University,Rutgers University
+Amherst College,Amherst College
+Stanford Law School,Stanford University
+Pepperdine University,Pepperdine University
+University of Chicago (UG),UG
+Toast.org,Toast
+University of Tennessee,University Tennessee
+CUNY,City University New York
+University of Toronto,University Toronto
+LinkedIn,LinkedIn
+PayPal,PayPal
+University of Oklahoma,University Oklahoma
+Middlebury College,Middlebury College
+University of Chicago Booth School of Business,University Chicago
+Stony Brook University,Stony Brook University
+Marsh & McLennan Companies,Marsh McLennan
+ICF,ICF
+Bridgewater,Bridgewater
+University of Miami,University Miami
+University of Manitoba,University Manitoba
+New York University,New York University
+Kansas University Medical Center,Kansas University Medical Center
+Dalhousie University,Dalhousie University
+BCG,Boston Consulting Group
+WarnerMedia,Warner Media
+Ohio State University,Ohio State University
+Apple,Apple
+San Diego State University,San Diego State University
+T. Rowe Price,T Rowe Price
+University of Chicago Law School,University Chicago
+Simon Fraser University,Simon Fraser University
+University of Sheffield,University Sheffield
+GoDaddy for Good,GoDaddy
+Ursinus College,Ursinus College
+University of Nebraska-Lincoln,University Nebraska-Lincoln
+Rollins College,Rollins College
+Workiva,Workiva
+Cargill,Cargill
+Harvard Medical School,Harvard University
+Indeed,Indeed
+GitHub,GitHub
+Brigham Young University,Brigham Young University
+Monash University,Monash University
+S&P,SandP
+Rotman School of Management,University Toronto
+University of Wisconsin - Madison,University Wisconsin - Madison
+Duke Energy,Duke Energy
+Manhattan College,Manhattan College
+University Canada West,University Canada West
+Moody's Corporation,Moody's
+University of South Florida,University South Florida
+Rice University,Rice University
+UHG,UnitedHealth
+Cornell University,Cornell University
+Ernst & Young (UK),Ernst and Young
+Humana,Humana
+UC Irvine,University California Irvine
+Elevance Health,Anthem
+Perella Weinberg,Perella Weinberg
+Stanford General Grad Chapter,Stanford University
+The Trade Desk,Trade Desk
+NYU Stern,New York University Stern School of Business
+Private Company,Private
+Sun Life Financial,Sun Life Financial
+AXIS,AXIS
+Ernst & Young (EY),Ernst and Young
+Publicis,Publicis
+BMO Financial Group,BMO Financial
+Swinburne University of Technology,Swinburne University Technology
+Cardozo Law School,Cardozo Law School

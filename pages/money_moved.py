@@ -53,12 +53,15 @@ def toggle_ai_modal(ai_icon_click_list, is_ai_modal_open):
     Output("money-moved-card", "children"),
     Output("cf-money-moved-card", "children"),
     Output("money-moved-cumulative-graph", "figure"),
+    Output("recurring-money-moved-bar-graph", "figure"),
+    Output("chapter-dumbell-graph", "figure"),
     # Output("cf-money-moved-cumulative-graph", "figure"),
     # Output("money-moved-mosaic-graph", "figure"),
     Output("money-moved-heatmap-graph", "figure"),
     Output("ai-message-store", "data", allow_duplicate = True),
     Input("fy-filter", "value"),
     Input("mm-cf-cumulative-radio-filter", "value"),
+    Input("topn-chapter-slider", "value"),
     # Input("payment-platform-filter", "value"),
     # Input("chapter-type-filter", "value"),
     Input({"type": "ai-icon", "chart": ALL}, "n_clicks"),
@@ -67,7 +70,7 @@ def toggle_ai_modal(ai_icon_click_list, is_ai_modal_open):
     ],
     prevent_initial_call = "initial_duplicate"
 )
-def update_kpis_graphs(selected_fy, selected_amount_type, ai_icon_clicks_list, existing_ai_messages):
+def update_kpis_graphs(selected_fy, selected_amount_type, topn_donor_chapter_value, ai_icon_clicks_list, existing_ai_messages):
     triggered_id = ctx.triggered_id
     chart_insight = None
 
@@ -95,7 +98,7 @@ def update_kpis_graphs(selected_fy, selected_amount_type, ai_icon_clicks_list, e
     money_moved_lf = (merged_lf
                    .select(["payment_date_fy", "payment_date_fm", "payment_date_calendar_year", "payment_date_calendar_month", "payment_date_calendar_monthname", 
                             "payment_date_calendar_monthyear", "payment_date_day_of_week", "payment_date_week_of_fy", "pledge_status", "pledge_chapter_type", 
-                            "payment_portfolio", "payment_platform", "payment_date", "payment_amount_usd", "payment_cf_amount_usd"
+                            "payment_portfolio", "payment_platform", "payment_date", "payment_amount_usd", "payment_cf_amount_usd", "pledge_frequency_type"
                     ])
                    .filter(~pl.col("payment_portfolio").is_in(["One for the World Discretionary Fund", "One for the World Operating Costs"]))
                    .sort("payment_date_fm")
@@ -108,6 +111,7 @@ def update_kpis_graphs(selected_fy, selected_amount_type, ai_icon_clicks_list, e
     # cf mm FYTD
     cf_money_moved_ytd_value = money_moved_lf.select(pl.col("payment_cf_amount_usd").sum()).collect().item()
     cf_mm_card = figure_instance.create_kpi_card(cf_money_moved_ytd_value, goal = cf_fund_raise_target, body_text = "CF Money Moved FYTD")
+
 
     # money moved monthly
     money_moved_ytd_df = (money_moved_lf
@@ -123,7 +127,9 @@ def update_kpis_graphs(selected_fy, selected_amount_type, ai_icon_clicks_list, e
         ])
         .collect()
     )
- 
+
+    mm_monthly_fig = go.Figure()
+
     if "cf" in selected_amount_type:
         mm_monthly_fig = figure_instance.create_monthly_mm_graph(money_moved_ytd_df, "cf_money_moved_cumulative", cf_fund_raise_target)
     else:
@@ -131,7 +137,54 @@ def update_kpis_graphs(selected_fy, selected_amount_type, ai_icon_clicks_list, e
 
     # mm_mosaic_fig = figure_instance.create_money_mural_mosaic(money_moved_ytd_df)
 
+    # Recurring vs One-Time bar graph
+    money_moved_reoccuring_df = (money_moved_lf
+            .group_by(["payment_date_fm", "payment_date_calendar_month", "payment_date_calendar_monthyear", "pledge_frequency_type"])
+            .agg([
+                pl.col("payment_amount_usd").sum().alias("money_moved_usd"),
+            ])
+            .sort(["payment_date_fm", "pledge_frequency_type"])
+            # .with_columns([
+            #     pl.sum("money_moved_usd").over(["payment_date_fm"]).alias("money_moved_monthly"),
+            # ])
+            # .with_columns([
+            #     pl.col("money_moved_monthly").cum_sum().over(["pledge_frequency_type"]).alias("money_moved_usd_cumulative"),
+            # ])
+            .collect()  
+        )
+            
+    reoccuring_vs_onetime_fig = figure_instance.create_reoccuring_vs_onetime_bar_graph(money_moved_reoccuring_df)
+    # End of recurring vs one-time bar graph
+
+    # Top N Donor Chapter Dumbell Chart (Selected FY vs Prior FY)
+    prior_fy_value = f"FY{int(selected_fy[2:6]) - 1}-{int(selected_fy[7:]) - 1}"
+    dumbell_chart_filters = [("payment_date_fy", "in", [selected_fy, prior_fy_value])]
+    money_moved_top_n_donors_df_pd = (data_preparer.filter_data("merged", dumbell_chart_filters)
+        .collect()
+        .pivot(
+            values="payment_amount_usd",  # Replace with the column you want to aggregate
+            index=["pledge_donor_chapter"],  # Replace with the columns you want as index
+            on="payment_date_fy",
+            aggregate_function="sum"  # Replace with the aggregation function you need
+        )    
+        .rename({
+            selected_fy: "selected_fy",
+            prior_fy_value: "prior_fy"
+        })
+        .filter(pl.col("pledge_donor_chapter").is_not_null())
+        .filter(pl.col("selected_fy").is_not_null())
+        .sort("selected_fy", descending=True)
+        .head(topn_donor_chapter_value)    
+        .to_pandas()                         
+    )
+    
+    dumbell_chart_fig = figure_instance.create_dumbell_chart_w_logo(money_moved_top_n_donors_df_pd, selected_fy, prior_fy_value)
+
+    #End of Top N Donor Chapter Dumbell Chart
+
+    # Calendar heatmap
     mm_heatmap_fig = figure_instance.create_calendarplot(money_moved_lf.collect())
+    # End of calendar heatmap
 
     # For AI insight
     ai_insight = []
@@ -142,12 +195,16 @@ def update_kpis_graphs(selected_fy, selected_amount_type, ai_icon_clicks_list, e
         #     ai_insight.append(data_preparer.get_llm_insight(mm_monthly_fig.to_json()))
         elif chart_insight == "money-moved-heatmap-graph":
             ai_insight.append(data_preparer.get_llm_insight(mm_heatmap_fig.to_json()))
+        elif chart_insight == "recurring-money-moved-bar-graph":
+            ai_insight.append(data_preparer.get_llm_insight(reoccuring_vs_onetime_fig.to_json()))
+        elif chart_insight == "chapter-dumbell-graph":
+            ai_insight.append(data_preparer.get_llm_insight(dumbell_chart_fig.to_json()))
         # else:
         #     ai_insight.append("No insight available for this chart.")
 
     new_ai_messages = ai_insight + existing_ai_messages if len(ai_insight) > 0 else existing_ai_messages
 
-    return mm_card, cf_mm_card, mm_monthly_fig, mm_heatmap_fig, new_ai_messages
+    return mm_card, cf_mm_card, mm_monthly_fig, reoccuring_vs_onetime_fig, dumbell_chart_fig, mm_heatmap_fig, new_ai_messages
 
 
 @callback(
@@ -201,6 +258,7 @@ def update_mm_monthly_trendline(selected_fy, selected_amount_type, selected_dril
 
 @callback(
     Output("active-pledge-arr-sankey-graph", "figure"),
+    Output("active-pledge-arr-card", "children"),
     Output("ai-message-store", "data", allow_duplicate = True),
     Input("fy-filter", "value"),
     Input("active-pledge-arr-sankey-view-mode", "value"),
@@ -222,21 +280,26 @@ def update_active_pledge_arr_sankey(selected_fy, selected_view_mode, ai_icon_cli
     if selected_fy:
         filters.append(("pledge_starts_at_fy", "==", selected_fy))
 
-    pledge_active_arr_lf = data_preparer.filter_data("pledge_active_arr", filters)
+    pledge_active_arr_df = data_preparer.filter_data("pledge_active_arr", filters).collect()
 
-    active_pledge_arr_sankey_graph = figure_instance.create_active_pledge_arr_sankey(pledge_active_arr_lf.collect(), selected_view_mode)
+
+    total_arr_value = pledge_active_arr_df.select(pl.sum("pledge_contribution_arr_usd")).item()
+    active_pledge_arr_card = figure_instance.create_kpi_card(total_arr_value, goal = 1_200_000, body_text = "Active Annualized Run Rate")
+
+    # Sankey graph
+    active_pledge_arr_sankey_fig = figure_instance.create_active_pledge_arr_sankey(pledge_active_arr_df, selected_view_mode)
 
     # For AI insight
     ai_insight = []
     if chart_insight:
         if chart_insight =="active-pledge-arr-sankey-graph":
-            ai_insight.append(data_preparer.get_llm_insight(active_pledge_arr_sankey_graph.to_json()))
+            ai_insight.append(data_preparer.get_llm_insight(active_pledge_arr_sankey_fig.to_json()))
         # else:
         #     ai_insight.append("No insight available for this chart.")
 
     new_ai_messages = ai_insight + existing_ai_messages if len(ai_insight) > 0 else existing_ai_messages
 
-    return active_pledge_arr_sankey_graph, new_ai_messages
+    return active_pledge_arr_sankey_fig, active_pledge_arr_card, new_ai_messages
 
 @callback(
     Output("ai-output", "children"),

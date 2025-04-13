@@ -1,0 +1,10 @@
+=== LOGO DOWNLOAD REPORT ===
+
+Total organizations: 176
+Successfully downloaded: 0
+Skipped (already exist): 352
+Failed to download: 0
+
+--- SUCCESSFUL DOWNLOADS ---
+
+--- FAILED DOWNLOADS ---
