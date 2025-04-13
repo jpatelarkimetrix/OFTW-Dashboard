@@ -9,11 +9,21 @@ import dash_bootstrap_components as dbc
 
 import math
 import polars as pl
+import pandas as pd
 import numpy as np
+
+import json
+import cairosvg  # You'll need to install this: pip install cairosvg
+import base64
+from PIL import Image
+from io import BytesIO
 
 from utils.data_preparer import DataPreparer
 
 data_preparer = DataPreparer()
+
+# Define your total target ARR
+TOTAL_TARGET = 1_200_000
 
 class Figure:
 
@@ -22,13 +32,19 @@ class Figure:
     
     # One for the World color palette
     colors = {
-        'primary': '#006466',     # Teal/blue-green
+        "primary": "#006466",  # Teal/blue-green
         'secondary': '#065A60',   # Darker teal
         'accent': '#0B525B',      # Another shade
         'light': '#144552',       # Lighter shade
         'text': '#1B3A4B',        # For text
         'highlight': '#F2F2F2',   # Light highlight
         'white': '#FFFFFF'
+    }
+
+    freq_type_colors = {
+        "Recurring": "#0078D4",     # Communication Blue
+        "One-Time": "#006466",      # Persimmon
+        "Unspecified": "#498205"    # Fern Green
     }
 
     custom_colorscale = [
@@ -203,13 +219,13 @@ class Figure:
 
             label = ""
             if value <= y_vals[current_idx]:
-                label = f"${value:,} ({percent:.0%}) Achieved"
+                label = f"${value/1e6:.1f}M ({percent:.0%}) Achieved"
                 if percent == 1:
-                    label = f"${value:,} Target Achieved"
+                    label = f"${value/1e6:.1f}M Target Achieved"
             else:
-                label = f"${value:,} ({percent:.0%})"
+                label = f"${value/1e6:.1f}M ({percent:.0%})"
                 if percent == 1:
-                    label = f"${value:,} Target"
+                    label = f"${value/1e6:.1f}M Target"
 
             fig.add_hline(
                 y = value,
@@ -234,7 +250,7 @@ class Figure:
             template = self.plotly_template,
             margin =  dict(l = 50, r = 10, t = 10, b = 10),
             xaxis = dict(
-                title = "Month",
+                # title = "Month",
                 tickvals = x_vals,
                 ticktext = x_vals,
                 showgrid = False,
@@ -509,13 +525,14 @@ class Figure:
 
             for trace in unique_traces:
                 trace_df = df.filter(pl.col(selected_drilldown_by) == trace).sort("payment_date_fm")
+
                 fig = fig.add_trace(
                     self.create_line_trace(
                         x_values = trace_df["payment_date_calendar_monthyear"],
                         y_values = trace_df["money_moved_monthly"],
                         markers_mode = "lines+markers",
                         marker_size = 8,
-                        # marker_color = self.colors['primary'],
+                        marker_color = px.colors.qualitative.Set3,
                         # text_values_list = [f"${val:,.2f}" if val is not None else "" for val in y_vals],
                         text_position = "top left",
                         name_for_legend = trace,
@@ -559,10 +576,11 @@ class Figure:
         fig.update_layout(
             hovermode = "x unified",
             # showlegend = False,
+            legend = dict(title = dict(text = "Select (Double-Click) / De-Select (One-Click)", side = "top center"), yanchor = "top", y = 1.1, x = 0.5, xanchor = "center", orientation = "h"),
             template = self.plotly_template,
             margin =  self.chart_margin,
             xaxis = dict(
-                title = "Month",
+                # title = "Month",
                 # tickvals = x_vals,
                 # ticktext = x_vals,
                 showgrid = False,
@@ -574,7 +592,7 @@ class Figure:
             yaxis = dict(
                 # title = "Cumulative Donations",
                 # range = [0, target * 1.2],
-                tickformat = "$,.0f",
+                tickformat = "$,.3s",
                 showgrid = False,
                 zeroline = False,
                 showline = False,
@@ -589,4 +607,271 @@ class Figure:
             # ),
         )
             
+        return fig
+    
+    # Define the Sankey generator function
+    def create_active_pledge_arr_sankey(self, df: pl.DataFrame, view_mode: str = "actual", total_target: float = TOTAL_TARGET) -> go.Figure:
+
+        grouped = df.group_by(["pledge_chapter_type", "pledge_frequency"]).agg(
+            pl.col("pledge_contribution_arr_usd").sum().alias("actual_arr")
+        ).to_pandas()
+
+        if view_mode == "target":
+            total_actual = grouped["actual_arr"].sum()
+            grouped["target_arr"] = (grouped["actual_arr"] / total_actual) * total_target
+            grouped["gap_arr"] = (grouped["target_arr"] - grouped["actual_arr"]).clip(lower=0)
+
+        chapters = grouped["pledge_chapter_type"].unique().tolist()
+        freqs = grouped["pledge_frequency"].unique().tolist()
+        sinks = ["Actual ARR"] if view_mode == "actual" else ["Actual ARR", "Gap to Target"]
+        all_nodes = chapters + freqs + sinks
+        node_idx = {label: idx for idx, label in enumerate(all_nodes)}
+
+        sources, targets, values = [], [], []
+
+        for _, row in grouped.iterrows():
+            ch = row["pledge_chapter_type"]
+            fr = row["pledge_frequency"]
+            actual = row["actual_arr"]
+
+            sources.append(node_idx[ch])
+            targets.append(node_idx[fr])
+            values.append(actual if view_mode == "actual" else actual + row["gap_arr"])
+
+        flow_to_actual = grouped.groupby("pledge_frequency")["actual_arr"].sum().to_dict()
+
+        flow_to_gap = {}
+        if view_mode == "target" and "gap_arr" in grouped.columns:
+            flow_to_gap = grouped.groupby("pledge_frequency")["gap_arr"].sum().to_dict()
+
+        for fr in freqs:
+            actual_val = flow_to_actual.get(fr, 0)
+            gap_val = flow_to_gap.get(fr, 0)
+
+            if actual_val > 0:
+                sources.append(node_idx[fr])
+                targets.append(node_idx["Actual ARR"])
+                values.append(actual_val)
+
+            if view_mode == "target" and gap_val > 0:
+                sources.append(node_idx[fr])
+                targets.append(node_idx["Gap to Target"])
+                values.append(gap_val)
+
+        fig = go.Figure(data=[go.Sankey(
+            node=dict(
+                pad=15,
+                thickness=20,
+                label=all_nodes,
+                color=[
+                    "#006466" if n in chapters else
+                    "#0B525B" if n in freqs else
+                    "#2D6A4F" if n == "Actual ARR" else
+                    "#D00000" if n == "Gap to Target" else
+                    "#ccc" for n in all_nodes
+                ],
+                hovertemplate=(
+                    "<b>%{label}</b><br>" +
+                    "Total Value Through Node: $%{value:,.3s}<extra></extra>"
+                )
+            ),
+            link=dict(
+                source=sources,
+                target=targets,
+                value=values,
+                hovertemplate=(
+                    "<b>Flow</b>: %{source.label} → %{target.label}<br>" +
+                    "ARR Amount: <b>$%{value:,.3s}</b><extra></extra>"
+                ),
+                color="rgba(0,100,100,0.3)"
+            ),
+        )])
+
+        fig.update_layout(
+            title=(
+                "Annualized Run Rate Flow " + 
+                (f"(What it would take to reach ${total_target/1e6:.1f}M)" if view_mode == "target" else "") +
+                " : Chapter Type → Frequency → " +
+                ("Current ARR" if view_mode == "actual" else f"Current ARR & Remaining")
+            ),
+            font_size=12,
+            margin=dict(t=30, l=10, r=10, b=10),
+        )
+
+        return fig
+    
+    def create_reoccuring_vs_onetime_bar_graph(self, df):
+        """
+        
+        """
+        
+        fig = go.Figure()
+
+        hover_template = "<br>".join([
+            # "%{x}",
+            "$%{y:,.2f}",
+        ])
+
+        for freq_type in df["pledge_frequency_type"].unique():
+            freq_df = df.filter(pl.col("pledge_frequency_type") == freq_type)
+
+            x_vals = freq_df["payment_date_calendar_monthyear"].to_list()
+
+            color = self.freq_type_colors.get(freq_type, self.colors['primary'])  # Fallback to default if unknown
+
+            fig.add_trace(
+                go.Bar(
+                    x = x_vals,
+                    y = freq_df["money_moved_usd"],
+                    name = f"{freq_type}",
+                    text = freq_df["money_moved_usd"],
+                    texttemplate = "$%{text:.3s}",
+                    textposition = "outside",
+                    hovertemplate = hover_template,
+                    marker_color = color,
+                    # hoverinfo="text",
+                )
+            )
+
+        # Add cumulative YTD line
+        # fig.add_trace(go.Scatter(
+        #     x = df["payment_date_calendar_monthyear"],
+        #     y = df["money_moved_usd_cumulative"],
+        #     mode = "lines+markers",
+        #     name = f"Cumulative FYTD",
+        #     line = dict(width = 3, color = self.colors['secondary'], dash = "dot"),
+        #     marker = dict(size=6),
+        #     yaxis = "y2",
+        #     hovertemplate = "<b>Cumulative Overall FYTD: $%{y:,.0f}</b><extra></extra>"
+        # ))
+
+            # fig.add_trace(
+            #     self.create_line_trace(
+            #         x_values = x_vals,
+            #         y_values = freq_df["money_moved_usd_cumulative"],
+            #         markers_mode = "lines+markers",
+            #         marker_size = 6,
+            #         marker_color = self.colors['secondary'],
+            #         text_values_list = [f"${val:,.2f}" if val is not None else "" for val in freq_df["money_moved_usd_cumulative"]],
+            #         text_position = "top left",
+            #         name_for_legend = f"{freq_type} Cumulative YTD",
+            #         # legend_group = "Cumulative Donations",
+            #         line_color = self.colors['secondary'],
+            #         line_width = 3,
+            #         hover_template = "%{text}",
+            #         hover_info = "text",
+            #     )
+            # )
+
+        fig.update_layout(
+            hovermode = "x unified",
+            xaxis = dict(showgrid = False, zeroline = False, showline = True, ticks = "outside", tickcolor = self.colors['secondary']),
+            yaxis = dict(tickformat = "$,.3s", showgrid = True, zeroline = False, showline = True, ticks = "outside", tickcolor = self.colors['secondary']),
+            yaxis2=dict(
+                title="Cumulative Total YTD",
+                overlaying="y",
+                side="right",
+                showgrid=False
+            ),
+            barmode = 'group',
+            template = self.plotly_template,
+            margin = self.chart_margin,
+            legend = dict(title = dict(text = "Select (Double-Click) / De-Select (One-Click)", side = "top center"), yanchor = "top", y = 1.1, x = 0.5, xanchor = "center", orientation = "h"),
+        )
+
+        return fig
+    
+    def create_dumbell_chart_w_logo(self, df, selected_fy, prior_fy):
+
+        df = df.sort_values(by = "pledge_donor_chapter")
+
+        fig = go.Figure()
+
+        # Add traces for the dumbbell chart
+        fig.add_trace(go.Scatter(
+            x=df["prior_fy"],
+            y=df["pledge_donor_chapter"],
+            mode="markers",
+            name=f"{selected_fy}",
+            marker=dict(color=self.colors["primary"], size=10)
+        ))
+
+        fig.add_trace(go.Scatter(
+            x=df["selected_fy"],
+            y=df["pledge_donor_chapter"],
+            mode="markers",
+            name=f"{prior_fy}",
+            marker=dict(color=self.freq_type_colors.get("Unspecified"), size=10)
+        ))
+
+        for _, row in df.iterrows():
+            fig.add_trace(go.Scatter(
+                x=[row["prior_fy"], row["selected_fy"]],
+                y=[row["pledge_donor_chapter"], row["pledge_donor_chapter"]],
+                mode="lines",
+                line=dict(color="gray", width=1),
+                showlegend=False
+            ))
+        
+        # Add logos as layout images
+        layout_images = []
+        y_values = df["pledge_donor_chapter"].tolist()
+
+        logo_mapping = data_preparer.load_logo_mappings()
+        
+        # Add logos for each donor chapter
+        # In the logo addition section:
+        for i, donor_chapter in enumerate(y_values):
+            # Find the logo for this donor chapter
+            logo_file = data_preparer.find_best_logo_match(donor_chapter, logo_mapping)
+            
+            if logo_file:
+                # Convert logo to base64
+                logo_b64 = data_preparer.get_logo_as_base64(logo_file)
+                
+                if logo_b64:
+                    # For smaller datasets, adjust sizing
+                    row_height = 1.0
+                    if len(y_values) <= 5:
+                        # Make logos larger for smaller datasets
+                        size_multiplier = 0.2
+                    else:
+                        size_multiplier = 0.15
+                    
+                    # Add image to layout - use paper coordinates with adjusted position
+                    layout_images.append({
+                        "source": logo_b64,
+                        "xref": "paper",
+                        "yref": "y",
+                        "x": 0.0,  # Move to the far left edge of the plotting area
+                        "y": donor_chapter,
+                        "sizex": 0.08,  # Slightly smaller width
+                        "sizey": row_height * 0.7,  # Slightly smaller height
+                        "xanchor": "right",  # Anchor to right side of image
+                        "yanchor": "middle",
+                        "layer": "above"
+                    })
+
+        # Update layout with adjusted margins and axis placement
+        fig.update_layout(
+            # title=f"Top Something Donor Chapters - FY", # {selected_fy} vs FY {selected_fy - 1} (YTD Month {selected_fm})",
+            xaxis=dict(
+                title="Amount (USD)",
+                domain=[0.25, 1],  # Increase left margin to 15% for logos
+            ),
+            yaxis=dict(
+                # title="Donor Chapter",
+                # categoryorder="array",
+                # categoryarray=donor_order,
+                side="left",  # Ensure y-axis is on the left
+                position=0.25,  # Position y-axis at 15% from left
+                automargin=True  # Automatically adjust margin for labels
+            ),
+            height=max(500, 100 + 50 * len(y_values)),  # Dynamic height
+            margin=dict(l=140, r=40, t=50, b=40),  # Increase left margin
+            template=self.plotly_template,
+            images=layout_images,
+            legend = dict(title = dict(side = "top center"), yanchor = "top", y = 1.1, x = 0.5, xanchor = "center", orientation = "h"),
+        )
+
         return fig

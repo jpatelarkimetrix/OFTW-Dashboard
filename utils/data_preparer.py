@@ -2,11 +2,21 @@ import polars as pl
 
 import openai
 import os
+from pathlib import Path
+
+import json
+import cairosvg  # You'll need to install this: pip install cairosvg
+import base64
+import re
+from PIL import Image
+from io import BytesIO
 
 from utils.data_loader import data_loader
 
 # Set up OpenAI API (ensure this is your valid API key)
 openai.api_key = os.getenv("OPENAI_API_KEY")
+
+LOGO_DIR = (Path(__file__)/'..'/'..'/'data/downloaded_logos/').resolve()
 
 class DataPreparer:
     def __init__(self):
@@ -123,7 +133,7 @@ class DataPreparer:
             2. 2 key insights from the data. 
             3. 2 actionable suggestions for organization.  
             Plotly Figure Data: {}
-            Please provide the insights in a structured format, such as:
+            Please provide the insights in a markdown format, such as:
             1. Summary: [Your summary here]
             2. Key Insights: [Your insights here]
             3. Action Suggestions: [Your suggestions here]
@@ -147,3 +157,87 @@ class DataPreparer:
             # Handle error (e.g., log it, raise it, etc.)
             # For now, return a placeholder
             return "LLM could not generate insight."
+        
+    # Load logo mappings
+    def load_logo_mappings(self):
+        """Load the mapping between donor_chapter names and logo filenames"""
+        mapping_file = LOGO_DIR / "logo_mapping.json"
+        
+        if mapping_file.exists():
+            with open(mapping_file, "r") as f:
+                return json.load(f)
+        else:
+            # Create a simple mapping from files that exist
+            mapping = {}
+            logo_files = list(LOGO_DIR.glob("*.svg")) + list(LOGO_DIR.glob("*.png")) + list(LOGO_DIR.glob("*.ico"))
+            
+            # Try to match logo filenames to organization names
+            for logo_file in logo_files:
+                # Extract organization name from filename (without extension)
+                slug = logo_file.stem
+                # Convert slug back to a name (very basic)
+                org_name = slug.replace('-', ' ').title()
+                mapping[org_name] = logo_file.name
+            
+            return mapping
+
+    def get_logo_as_base64(self, logo_filename, height=30):
+        """Get the logo as a base64 encoded string, resized to specified height"""
+        
+        file_path = LOGO_DIR / logo_filename
+        if not file_path.exists():
+            return None
+        
+        try:
+            # Handle different file formats
+            if file_path.suffix.lower() == '.svg':
+                # Convert SVG to PNG using cairosvg
+                png_data = cairosvg.svg2png(
+                    url=str(file_path),
+                    output_width=None,  
+                    output_height=height
+                )
+                encoded = base64.b64encode(png_data).decode('ascii')
+                b64_image = f"data:image/png;base64,{encoded}"
+            else:
+                # For PNG, JPG, ICO, etc.
+                with Image.open(file_path) as img:
+                    # Calculate new width to maintain aspect ratio
+                    width = int(img.width * (height / img.height))
+                    # Resize the image
+                    img = img.resize((width, height), Image.LANCZOS)
+                    
+                    # Save to BytesIO in PNG format
+                    buffer = BytesIO()
+                    img.save(buffer, format="PNG")
+                    buffer.seek(0)
+                    
+                    encoded = base64.b64encode(buffer.read()).decode('ascii')
+                    b64_image = f"data:image/png;base64,{encoded}"
+            
+            return b64_image
+        
+        except Exception as e:
+            print(f"Error processing logo {logo_filename}: {e}")
+            return None
+        
+    # Function to find the best matching logo for a donor chapter
+    def find_best_logo_match(self, donor_chapter, logo_mapping):
+        """Find the best matching logo for a donor chapter name"""
+        if donor_chapter in logo_mapping:
+            return logo_mapping[donor_chapter]
+        
+        # Try to find a partial match
+        donor_lower = donor_chapter.lower()
+        for org_name, logo_file in logo_mapping.items():
+            if org_name.lower() in donor_lower or donor_lower in org_name.lower():
+                return logo_file
+        
+        # Try matching with standardized names
+        donor_slug = re.sub(r'[^a-z0-9\s]', '', donor_lower).replace(' ', '-')
+        for logo_file in os.listdir(LOGO_DIR):
+            file_stem = Path(logo_file).stem
+            if donor_slug in file_stem or file_stem in donor_slug:
+                return logo_file
+        
+        return None

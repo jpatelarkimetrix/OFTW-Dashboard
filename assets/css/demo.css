@@ -148,7 +148,7 @@ header {
   font-size: 32px;
   line-height: 120px;
   height: 70px;
-  background: #2675f8;
+  background:  #FF6F3C;
   color: #f9f9f9;
   text-shadow: 1px -1px #000;
   transition: all 0.3s ease;
@@ -185,7 +185,7 @@ header.sticky {
   top: 0;
   height: 60px;
   width: 100%;
-  background: #2675f8;
+  background:  #FF6F3C;
   z-index: 999;
   justify-content: flex-start;
 }
@@ -239,7 +239,8 @@ header.sticky .logo {
 }
 
 .bg-footer-theme{
-  background-color: black;
+  background-color: linear-gradient(to right, #34495E, #2C3E50);
+  /* background-color: #2C3E50; */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -270,7 +271,7 @@ header.sticky .logo {
 }
 .right-bg-yellow h3{
   color: #88ab03 !important;
-  font-size: 1.5rem!important;
+  font-size: 2rem!important;
 }
 .right-bg-yellow p{
   font-weight: 500;
@@ -279,7 +280,7 @@ header.sticky .logo {
  
 text-align: center;
     color: rgb(237 255 183)!important;
-    font-size: 14px;
+    font-size: 1.2rem !important;
     background: #222121;
     width: 50%;
     margin: 0 auto;
@@ -298,7 +299,7 @@ text-align: center;
 
   .right-bg-blue h3{
     color: #004cd3 !important  ;
-    font-size: 1.5rem!important;
+    font-size: 2rem!important;
   }
   .right-bg-blue p{
     font-weight: 500;
@@ -307,7 +308,7 @@ text-align: center;
    
 text-align: center;
     color: rgb(255 255 255)!important;
-    font-size: 14px;
+    font-size: 1.2rem !important;
     background: #3477ee;
     width: 50%;
     margin: 0 auto;
@@ -317,3 +318,36 @@ text-align: center;
     font-weight: 500;
     
     }
+
+
+/* FOrs cad green kpi colors*/
+.back-color-green {
+  background-color: #8bc34a !important;
+  background: linear-gradient(90deg, #558b2f 0%, #dcedc8 50%, #aeea00 100%);
+}
+
+.right-bg-green {
+  background: #f1fbdc;
+}
+
+.right-bg-green h3 {
+  color: #33691e !important;
+  font-size: 2rem !important;
+}
+
+.right-bg-green p {
+  font-weight: 500;
+}
+
+.right-bg-green p:last-child {
+  text-align: center;
+  color: rgb(255 255 255) !important;
+  font-size: 1.2rem !important;
+  background: #689f38;
+  width: 50%;
+  margin: 0 auto;
+  border-radius: 4px;
+  padding: 3px;
+  line-height: 20px;
+  font-weight: 500;
+}
