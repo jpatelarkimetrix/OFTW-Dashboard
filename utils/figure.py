@@ -610,8 +610,18 @@ class Figure:
         return fig
     
     # Define the Sankey generator function
-    def create_active_pledge_arr_sankey(self, df: pl.DataFrame, view_mode: str = "actual", total_target: float = TOTAL_TARGET) -> go.Figure:
+    def create_active_pledge_arr_sankey(
+        self,
+        df: pl.DataFrame,
+        view_mode: str = "actual",
+        total_target: float = 1000000,  # Replace with your TOTAL_TARGET value
+        top_n_labels: int = 3
+    ) -> go.Figure:
+        import plotly.graph_objects as go
+        import pandas as pd
+        import collections
 
+        # Step 1: Aggregate ARR by chapter + frequency
         grouped = df.group_by(["pledge_chapter_type", "pledge_frequency"]).agg(
             pl.col("pledge_contribution_arr_usd").sum().alias("actual_arr")
         ).to_pandas()
@@ -621,25 +631,26 @@ class Figure:
             grouped["target_arr"] = (grouped["actual_arr"] / total_actual) * total_target
             grouped["gap_arr"] = (grouped["target_arr"] - grouped["actual_arr"]).clip(lower=0)
 
+        # Step 2: Build node label list and mappings
         chapters = grouped["pledge_chapter_type"].unique().tolist()
         freqs = grouped["pledge_frequency"].unique().tolist()
         sinks = ["Actual ARR"] if view_mode == "actual" else ["Actual ARR", "Gap to Target"]
         all_nodes = chapters + freqs + sinks
         node_idx = {label: idx for idx, label in enumerate(all_nodes)}
 
+        # Step 3: Flow from chapter → frequency
         sources, targets, values = [], [], []
-
         for _, row in grouped.iterrows():
             ch = row["pledge_chapter_type"]
             fr = row["pledge_frequency"]
             actual = row["actual_arr"]
-
+            flow_value = actual if view_mode == "actual" else actual + row["gap_arr"]
             sources.append(node_idx[ch])
             targets.append(node_idx[fr])
-            values.append(actual if view_mode == "actual" else actual + row["gap_arr"])
+            values.append(flow_value)
 
+        # Step 4: Flow from frequency → sinks
         flow_to_actual = grouped.groupby("pledge_frequency")["actual_arr"].sum().to_dict()
-
         flow_to_gap = {}
         if view_mode == "target" and "gap_arr" in grouped.columns:
             flow_to_gap = grouped.groupby("pledge_frequency")["gap_arr"].sum().to_dict()
@@ -658,48 +669,59 @@ class Figure:
                 targets.append(node_idx["Gap to Target"])
                 values.append(gap_val)
 
-        fig = go.Figure(data=[go.Sankey(
+        # Step 5: Calculate flow totals for each node
+        node_flow_totals = collections.defaultdict(float)
+        for s, t, v in zip(sources, targets, values):
+            node_flow_totals[s] += v
+            node_flow_totals[t] += v
+
+        # Step 6: Create node labels with embedded value information
+        # This approach works regardless of how Plotly arranges the nodes
+        node_labels = []
+        for i, node in enumerate(all_nodes):
+            # Only add values to the top N nodes by flow
+            flow_value = node_flow_totals[i]
+            if i in [idx for idx, _ in sorted(node_flow_totals.items(), key=lambda x: -x[1])[:top_n_labels]]:
+                # Format the label with value information
+                node_labels.append(f"{node}<br>${flow_value:,.0f}")
+            else:
+                node_labels.append(node)
+        
+        # Step 7: Construct Sankey trace
+        sankey_trace = go.Sankey(
             node=dict(
                 pad=15,
                 thickness=20,
-                label=all_nodes,
+                label=node_labels,  # Use our enhanced labels with embedded values
                 color=[
-                    "#006466" if n in chapters else
-                    "#0B525B" if n in freqs else
-                    "#2D6A4F" if n == "Actual ARR" else
-                    "#D00000" if n == "Gap to Target" else
-                    "#ccc" for n in all_nodes
+                    "#006466" if i < len(chapters) else
+                    "#0B525B" if i < len(chapters) + len(freqs) else
+                    "#2D6A4F" if all_nodes[i] == "Actual ARR" else
+                    "#D00000" if all_nodes[i] == "Gap to Target" else
+                    "#ccc" for i in range(len(all_nodes))
                 ],
-                hovertemplate=(
-                    "<b>%{label}</b><br>" +
-                    "Total Value Through Node: $%{value:,.3s}<extra></extra>"
-                )
+                hovertemplate="<b>%{label}</b><br>Total: $%{value:,.3s}<extra></extra>"
             ),
             link=dict(
                 source=sources,
                 target=targets,
                 value=values,
-                hovertemplate=(
-                    "<b>Flow</b>: %{source.label} → %{target.label}<br>" +
-                    "ARR Amount: <b>$%{value:,.3s}</b><extra></extra>"
-                ),
+                hovertemplate="<b>Flow</b>: %{source.label} → %{target.label}<br>ARR: <b>$%{value:,.3s}</b><extra></extra>",
                 color="rgba(0,100,100,0.3)"
-            ),
-        )])
+            )
+        )
 
+        # Step 8: Create figure and apply layout
+        fig = go.Figure(data=[sankey_trace])
         fig.update_layout(
-            title=(
-                "Annualized Run Rate Flow " + 
-                (f"(What it would take to reach ${total_target/1e6:.1f}M)" if view_mode == "target" else "") +
-                " : Chapter Type → Frequency → " +
-                ("Current ARR" if view_mode == "actual" else f"Current ARR & Remaining")
-            ),
-            font_size=12,
-            margin=dict(t=30, l=10, r=10, b=10),
+            title_text="Annualized Run Rate Flow : Chapter Type → Frequency → Current ARR",
+            font=dict(size=12),
+            margin=dict(l=30, r=30, t=40, b=20)
         )
 
         return fig
-    
+
+
     def create_reoccuring_vs_onetime_bar_graph(self, df):
         """
         
